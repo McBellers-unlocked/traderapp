@@ -1,0 +1,39 @@
+trading:
+  symbol: ES  # E-mini S&P 500 futures
+  contract_month: "202603"  # Update based on front month
+  exchange: CME
+
+strategy:
+  name: "Opening Range Breakout"
+  opening_range_minutes: 5
+  trading_window:
+    start: "09:30"
+    end: "10:30"
+    timezone: "America/New_York"
+
+  entry_rules:
+    volume_confirmation: true
+    volume_multiplier: 1.5
+    min_breakout_points: 0.25  # Minimum points above/below OR
+
+  exit_rules:
+    use_stop_loss: true
+    stop_at_opposite_extreme: true
+    risk_reward_ratio: 2.0
+    trailing_stop: false
+
+risk_management:
+  max_position_size: 1
+  max_daily_loss: 500
+  max_daily_trades: 3
+  position_sizing_method: "fixed"  # Options: fixed, kelly, volatility_based
+
+filters:
+  avoid_news_days: true
+  min_volatility: 0  # Minimum VIX level (0 = no filter)
+  max_volatility: 100  # Maximum VIX level
+
+logging:
+  level: "INFO"
+  file: "logs/trading_bot.log"
+  console: true
