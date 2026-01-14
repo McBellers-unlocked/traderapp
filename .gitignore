@@ -39,8 +39,8 @@ logs/
 *.swo
 *~
 
-# Trading data
-data/
+# Trading data (CSV files, databases, etc. - not source code)
+/data/
 *.csv
 *.db
 
