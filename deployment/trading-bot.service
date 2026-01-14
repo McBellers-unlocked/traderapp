@@ -1,0 +1,17 @@
+[Unit]
+Description=ES Futures Trading Bot Web Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/traderapp
+Environment="PATH=/home/ec2-user/traderapp/venv/bin"
+ExecStart=/home/ec2-user/traderapp/venv/bin/gunicorn -w 2 -b 0.0.0.0:5000 --timeout 300 web_dashboard:app
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

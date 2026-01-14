@@ -53,15 +53,33 @@ traderapp/
 
 ## 🚀 Quick Start
 
+### 🌟 Deploy on AWS EC2 (Recommended - 5 Minutes!)
+
+**Want a web dashboard?** Deploy to AWS EC2 with one command:
+
+👉 **[See QUICKSTART_EC2.md](QUICKSTART_EC2.md)** - Complete setup in 5 minutes!
+
+Includes:
+- ✅ Beautiful web dashboard
+- ✅ Real-time monitoring
+- ✅ Start/Stop controls
+- ✅ Trade history & statistics
+- ✅ Automatic service management
+
+---
+
+### Local Installation
+
 ### Prerequisites
 
 - Python 3.9+
 - pip package manager
+- (Optional) AWS EC2 account for web dashboard
 - (Optional) Broker API credentials for live trading
 
 ### Installation
 
-1. **Clone the repository**:
+1. **Navigate to the repository**:
 ```bash
 cd traderapp
 ```
@@ -88,22 +106,26 @@ cp .env.example .env
 # Edit config.yaml to adjust strategy parameters
 ```
 
-### Running the Simulator
+### Running the Bot
 
-Test the bot with simulated market data:
+**Option 1: Web Dashboard (Recommended)**
+```bash
+python web_dashboard.py
+# Open browser to http://localhost:5000
+```
+Features:
+- Real-time status monitoring
+- Start/Stop controls
+- Trade history
+- Statistics dashboard
 
+**Option 2: Simulator (Testing)**
 ```bash
 python simulator.py
 ```
+Simulates full trading day with realistic scenarios
 
-This will simulate a full trading day with:
-- Opening range formation
-- Breakout scenario (random bullish/bearish)
-- Position management through to target/stop
-- Final statistics and trade history
-
-### Running the Bot (Paper Trading)
-
+**Option 3: Command Line (Headless)**
 ```bash
 python main.py
 ```
@@ -140,6 +162,27 @@ risk_management:
 filters:
   avoid_news_days: true           # Skip major news days
 ```
+
+## 🖥️ Web Dashboard
+
+Beautiful web interface for monitoring and controlling the bot:
+
+### Features
+- **📊 Real-time Status**: Bot state, account balance, daily P&L
+- **📈 Opening Range Display**: Live OR high/low/range values
+- **🎯 Position Management**: Current position with entry/stop/target
+- **📜 Trade History**: All trades with P&L breakdown
+- **📉 Statistics**: Win rate, average win/loss, total trades
+- **⚙️ Controls**: Start/Stop bot with one click
+- **🔧 Configuration View**: All strategy parameters
+- **🔄 Auto-refresh**: Updates every 2 seconds
+
+### Access
+- **Locally**: `http://localhost:5000`
+- **On EC2**: `http://YOUR_PUBLIC_IP`
+
+### Screenshots
+![Dashboard](https://via.placeholder.com/800x400?text=Beautiful+Trading+Dashboard)
 
 ### Risk Management
 

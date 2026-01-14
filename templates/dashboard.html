@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES Futures Trading Bot - Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📈 ES Futures Trading Bot</h1>
+            <div class="header-controls">
+                <button id="startBtn" class="btn btn-success">Start Bot</button>
+                <button id="stopBtn" class="btn btn-danger" disabled>Stop Bot</button>
+                <div class="status-indicator">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Stopped</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Account Summary -->
+            <div class="card">
+                <h2>Account Summary</h2>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-label">Balance</div>
+                        <div class="stat-value" id="balance">$0.00</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Daily P&L</div>
+                        <div class="stat-value" id="dailyPnl">$0.00</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Bot State</div>
+                        <div class="stat-value small" id="botState">stopped</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Opening Range -->
+            <div class="card">
+                <h2>Opening Range</h2>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-label">High</div>
+                        <div class="stat-value" id="orHigh">-</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Low</div>
+                        <div class="stat-value" id="orLow">-</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Range</div>
+                        <div class="stat-value" id="orRange">-</div>
+                    </div>
+                </div>
+                <div class="or-status">
+                    <span id="orStatus">Not calculated</span>
+                </div>
+            </div>
+
+            <!-- Current Position -->
+            <div class="card">
+                <h2>Current Position</h2>
+                <div id="positionInfo" class="position-info">
+                    <p class="no-position">No open position</p>
+                </div>
+            </div>
+
+            <!-- Risk Status -->
+            <div class="card">
+                <h2>Risk Status</h2>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-label">Can Trade</div>
+                        <div class="stat-value small" id="canTrade">-</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Trades Today</div>
+                        <div class="stat-value" id="tradesToday">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Loss Limit</div>
+                        <div class="stat-value small" id="lossLimit">$0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card wide">
+                <h2>Trading Statistics</h2>
+                <div class="stats-grid wide-grid">
+                    <div class="stat">
+                        <div class="stat-label">Total Trades</div>
+                        <div class="stat-value" id="totalTrades">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Win Rate</div>
+                        <div class="stat-value" id="winRate">0%</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Winning Trades</div>
+                        <div class="stat-value" id="winningTrades">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Losing Trades</div>
+                        <div class="stat-value" id="losingTrades">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Avg Win</div>
+                        <div class="stat-value" id="avgWin">$0.00</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Avg Loss</div>
+                        <div class="stat-value" id="avgLoss">$0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trade History -->
+            <div class="card wide">
+                <h2>Trade History</h2>
+                <div class="trade-history" id="tradeHistory">
+                    <p class="no-trades">No trades yet</p>
+                </div>
+            </div>
+
+            <!-- Configuration -->
+            <div class="card wide">
+                <h2>Configuration</h2>
+                <div class="config-grid" id="configInfo">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Last updated: <span id="lastUpdate">-</span></p>
+        </footer>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
