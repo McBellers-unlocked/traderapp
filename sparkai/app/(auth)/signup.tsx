@@ -183,6 +183,7 @@ export default function SignupScreen() {
             }}
             secureTextEntry
             error={errors.password}
+            helperText={password.length === 0 ? "At least 8 characters recommended" : undefined}
             icon={<LockIcon />}
           />
 

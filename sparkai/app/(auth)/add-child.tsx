@@ -2,14 +2,19 @@ import { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   Pressable,
   ScrollView,
   Alert,
 } from 'react-native';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuthStore } from '@/lib/stores';
 import { AVATAR_OPTIONS } from '@/types';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Mascot } from '@/components/ui/Mascot';
+import { AvatarIcon, getAvatarType } from '@/components/ui/AvatarIcon';
+import Svg, { Path } from 'react-native-svg';
 
 export default function AddChildScreen() {
   const { parent, addChild } = useAuthStore();
@@ -17,128 +22,206 @@ export default function AddChildScreen() {
   const [age, setAge] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(AVATAR_OPTIONS[0].id);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; age?: string }>({});
+
+  const validate = () => {
+    const newErrors: typeof errors = {};
+
+    if (!name.trim()) {
+      newErrors.name = "Please enter your child's name";
+    }
+
+    if (age) {
+      const ageNum = parseInt(age);
+      if (isNaN(ageNum) || ageNum < 5 || ageNum > 18) {
+        newErrors.age = 'Age should be between 5 and 18';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleAddChild = async () => {
-    if (!name.trim()) {
-      Alert.alert('Error', "Please enter your child's name");
-      return;
-    }
-
-    const ageNum = parseInt(age);
-    if (age && (isNaN(ageNum) || ageNum < 5 || ageNum > 18)) {
-      Alert.alert('Error', 'Please enter a valid age between 5 and 18');
-      return;
-    }
+    if (!validate()) return;
 
     if (!parent) {
-      Alert.alert('Error', 'Parent account not found');
+      Alert.alert('Oops!', 'Parent account not found');
       return;
     }
 
     setIsLoading(true);
     try {
+      const ageNum = age ? parseInt(age) : null;
       const child = await addChild({
         parent_id: parent.id,
         display_name: name.trim(),
         avatar_id: selectedAvatar,
-        age: ageNum || null,
+        age: ageNum,
       });
 
       if (child) {
         router.replace('/(tabs)/learn');
       } else {
-        Alert.alert('Error', 'Failed to add child. Please try again.');
+        Alert.alert('Oops!', 'Failed to add child. Please try again.');
       }
     } catch (err) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      Alert.alert('Oops!', 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <ScrollView className="flex-1 bg-background">
+    <ScrollView
+      className="flex-1 bg-slate-50"
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Header */}
-      <View className="pt-16 pb-8 px-6">
-        <Text className="text-3xl font-bold text-text">Add your learner</Text>
-        <Text className="text-text-light mt-2">
-          Create a profile for your child to start their AI learning journey
-        </Text>
-      </View>
+      <LinearGradient
+        colors={['#10B981', '#059669']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        className="pt-12 pb-8 px-6 rounded-b-3xl"
+      >
+        <View className="flex-row items-center">
+          <View className="flex-1">
+            <Text className="text-3xl font-bold text-white mb-2">
+              Add your learner
+            </Text>
+            <Text className="text-white/80 text-base">
+              Create a profile for your child to start their AI adventure
+            </Text>
+          </View>
+          <View className="ml-4">
+            <Mascot size="sm" expression="excited" showGlow={false} />
+          </View>
+        </View>
+      </LinearGradient>
 
       {/* Form */}
-      <View className="px-6 space-y-6">
+      <View className="px-6 pt-8">
         {/* Avatar selection */}
-        <View>
-          <Text className="text-text font-medium mb-3">Choose an avatar</Text>
+        <View className="mb-6">
+          <Text className="text-slate-700 font-semibold mb-4 text-base">
+            Choose an avatar
+          </Text>
           <View className="flex-row flex-wrap justify-between">
             {AVATAR_OPTIONS.map((avatar) => (
               <Pressable
                 key={avatar.id}
-                className={`w-[30%] aspect-square bg-surface rounded-2xl items-center justify-center mb-4 border-2 ${
-                  selectedAvatar === avatar.id
-                    ? 'border-primary'
-                    : 'border-transparent'
-                }`}
+                className="w-[31%] mb-4 items-center"
                 onPress={() => setSelectedAvatar(avatar.id)}
               >
-                <Text className="text-4xl mb-1">{avatar.emoji}</Text>
-                <Text className="text-text-light text-xs">{avatar.name}</Text>
+                <View
+                  className={`p-2 rounded-2xl ${
+                    selectedAvatar === avatar.id
+                      ? 'bg-indigo-100'
+                      : 'bg-white'
+                  }`}
+                  style={{
+                    shadowColor: selectedAvatar === avatar.id ? '#6366F1' : '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: selectedAvatar === avatar.id ? 0.2 : 0.08,
+                    shadowRadius: 4,
+                    elevation: 3,
+                  }}
+                >
+                  <AvatarIcon
+                    type={getAvatarType(avatar.id)}
+                    size={64}
+                    selected={selectedAvatar === avatar.id}
+                  />
+                </View>
+                <Text
+                  className={`mt-2 text-sm font-medium ${
+                    selectedAvatar === avatar.id
+                      ? 'text-indigo-600'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  {avatar.name}
+                </Text>
               </Pressable>
             ))}
           </View>
         </View>
 
         {/* Name input */}
-        <View>
-          <Text className="text-text font-medium mb-2">Child's name</Text>
-          <TextInput
-            className="bg-surface border border-gray-200 rounded-xl px-4 py-3 text-text"
-            placeholder="Enter name"
-            placeholderTextColor="#64748B"
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
-          />
-        </View>
+        <Input
+          label="Child's name"
+          placeholder="Enter name"
+          value={name}
+          onChangeText={(text) => {
+            setName(text);
+            if (errors.name) setErrors({ ...errors, name: undefined });
+          }}
+          autoCapitalize="words"
+          error={errors.name}
+          icon={<UserIcon />}
+        />
 
         {/* Age input */}
-        <View>
-          <Text className="text-text font-medium mb-2">Age (optional)</Text>
-          <TextInput
-            className="bg-surface border border-gray-200 rounded-xl px-4 py-3 text-text"
-            placeholder="Enter age"
-            placeholderTextColor="#64748B"
-            value={age}
-            onChangeText={setAge}
-            keyboardType="number-pad"
-            maxLength={2}
-          />
-          <Text className="text-text-light text-sm mt-1">
-            Helps us personalize the learning experience
-          </Text>
-        </View>
+        <Input
+          label="Age (optional)"
+          placeholder="Enter age"
+          value={age}
+          onChangeText={(text) => {
+            setAge(text);
+            if (errors.age) setErrors({ ...errors, age: undefined });
+          }}
+          keyboardType="number-pad"
+          error={errors.age}
+          icon={<CakeIcon />}
+        />
+        <Text className="text-slate-400 text-sm -mt-2 mb-4 ml-1">
+          Helps us personalize the learning experience
+        </Text>
 
         {/* Submit button */}
-        <Pressable
-          className={`bg-primary py-4 rounded-2xl items-center mt-4 ${
-            isLoading ? 'opacity-50' : 'active:opacity-80'
-          }`}
+        <Button
+          title="Start Learning!"
           onPress={handleAddChild}
-          disabled={isLoading}
-        >
-          <Text className="text-white font-semibold text-lg">
-            {isLoading ? 'Creating profile...' : 'Start Learning!'}
-          </Text>
-        </Pressable>
+          loading={isLoading}
+          size="lg"
+        />
 
-        {/* Skip for now - only show if they already have children */}
-        <View className="items-center pb-8">
-          <Text className="text-text-light text-sm text-center">
-            You can add more children later from the settings
+        {/* Helper text */}
+        <View className="items-center mt-6 pb-8">
+          <Text className="text-slate-400 text-sm text-center">
+            You can add more children later from settings
           </Text>
         </View>
       </View>
     </ScrollView>
+  );
+}
+
+function UserIcon() {
+  return (
+    <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"
+        stroke="#94A3B8"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+function CakeIcon() {
+  return (
+    <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M20 21v-8a2 2 0 00-2-2H6a2 2 0 00-2 2v8M4 16h16M12 7V4M8 7V5M16 7V5M9 11h.01M15 11h.01"
+        stroke="#94A3B8"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
   );
 }

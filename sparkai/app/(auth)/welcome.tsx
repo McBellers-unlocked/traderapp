@@ -137,18 +137,36 @@ export default function WelcomeScreen() {
         </View>
       </View>
 
+      {/* Parent value prop */}
+      <View className="px-6 pb-3">
+        <View className="bg-emerald-50 rounded-2xl p-4 flex-row items-center">
+          <View className="bg-emerald-100 rounded-full p-2 mr-3">
+            <ShieldIcon />
+          </View>
+          <View className="flex-1">
+            <Text className="text-emerald-800 font-semibold text-sm">
+              Screen time you can feel good about
+            </Text>
+            <Text className="text-emerald-600 text-xs mt-0.5">
+              Educational content designed by experts
+            </Text>
+          </View>
+        </View>
+      </View>
+
       {/* Bottom buttons */}
       <View className="px-6 pb-10">
         <Link href="/(auth)/signup" asChild>
           <Pressable>
-            <Button title="Get Started" onPress={() => {}} size="lg" />
+            <Button title="Get Started Free" onPress={() => {}} size="lg" />
           </Pressable>
         </Link>
 
-        <View className="mt-4">
+        <View className="mt-5 flex-row justify-center items-center">
+          <Text className="text-slate-500">Already have an account? </Text>
           <Link href="/(auth)/login" asChild>
             <Pressable>
-              <Button title="I already have an account" onPress={() => {}} variant="outline" />
+              <Text className="text-indigo-600 font-bold underline">Sign in</Text>
             </Pressable>
           </Link>
         </View>
@@ -219,6 +237,27 @@ function StarIcon() {
       <Path
         d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
         fill="#10B981"
+      />
+    </Svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+        stroke="#059669"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M9 12l2 2 4-4"
+        stroke="#059669"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Svg>
   );

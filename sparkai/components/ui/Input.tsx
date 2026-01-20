@@ -4,6 +4,7 @@ import { View, Text, TextInput, Pressable, TextInputProps } from 'react-native';
 interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
+  helperText?: string;
   icon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
@@ -11,6 +12,7 @@ interface InputProps extends TextInputProps {
 export function Input({
   label,
   error,
+  helperText,
   icon,
   rightIcon,
   secureTextEntry,
@@ -60,6 +62,9 @@ export function Input({
       </View>
       {error && (
         <Text className="text-red-500 text-sm mt-1 ml-1">{error}</Text>
+      )}
+      {helperText && !error && (
+        <Text className="text-slate-400 text-sm mt-1 ml-1">{helperText}</Text>
       )}
     </View>
   );
