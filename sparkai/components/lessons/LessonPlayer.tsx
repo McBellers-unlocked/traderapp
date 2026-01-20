@@ -228,22 +228,60 @@ function ContentScreen({
       )}
 
       {data.bulletPoints && (
-        <View className="mb-4">
+        <View className="bg-white rounded-xl p-4 mb-4 shadow-sm">
           {data.bulletPoints.map((point, index) => (
-            <View key={index} className="flex-row mb-2">
-              <Text className="text-slate-600 text-base leading-relaxed">
-                {point.replace(/\*\*/g, '')}
+            <View key={index} className="flex-row items-start mb-3">
+              <Text className="text-indigo-500 mr-3 text-lg">•</Text>
+              <Text className="text-slate-700 text-base leading-relaxed flex-1">
+                {renderBoldText(point)}
               </Text>
             </View>
           ))}
         </View>
       )}
 
+      {/* Visual section for animations/grids */}
+      {data.visual && (
+        <View className="mb-4">
+          {data.visual.type === 'animation' && (
+            <View className="bg-indigo-50 rounded-xl p-4 flex-row justify-center items-center">
+              {(data.visual.data as { steps: { icon: string; label: string }[] }).steps.map((step, i, arr) => (
+                <View key={i} className="items-center mx-2">
+                  <Text className="text-3xl mb-1">{step.icon}</Text>
+                  <Text className="text-xs text-indigo-600">{step.label}</Text>
+                  {i < arr.length - 1 && <Text className="text-indigo-400 text-xl mx-2">→</Text>}
+                </View>
+              ))}
+            </View>
+          )}
+          {data.visual.type === 'grid' && (
+            <View className="bg-slate-100 rounded-xl p-4">
+              <View className="flex-row flex-wrap justify-center mb-3">
+                {(data.visual.data as { images: string[]; result: string }).images.map((img, i) => (
+                  <Text key={i} className="text-3xl m-1">{img}</Text>
+                ))}
+              </View>
+              <View className="flex-row items-center justify-center">
+                <Text className="text-slate-400 text-xl mr-2">→</Text>
+                <View className="bg-green-100 px-4 py-2 rounded-full">
+                  <Text className="text-green-700 font-bold">
+                    {(data.visual.data as { result: string }).result}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          )}
+        </View>
+      )}
+
       {data.tip && (
-        <View className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
-          <Text className="text-amber-800 text-base">
-            {data.tip.replace(/\*\*/g, '')}
-          </Text>
+        <View className="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-xl p-4 mb-4">
+          <View className="flex-row items-start">
+            <Text className="text-2xl mr-3">💡</Text>
+            <Text className="text-amber-900 text-base font-semibold flex-1">
+              {renderBoldText(data.tip)}
+            </Text>
+          </View>
         </View>
       )}
 
@@ -256,6 +294,17 @@ function ContentScreen({
       </View>
     </View>
   );
+}
+
+// Helper to render bold text (text between **)
+function renderBoldText(text: string) {
+  const parts = text.split(/\*\*(.*?)\*\*/g);
+  return parts.map((part, i) => {
+    if (i % 2 === 1) {
+      return <Text key={i} className="font-bold text-slate-800">{part}</Text>;
+    }
+    return part;
+  });
 }
 
 // Quiz Screen Component
@@ -344,42 +393,85 @@ function QuizScreen({
           const isSelected = selectedAnswer === index;
           const isCorrect = option.isCorrect;
           const showCorrectness = showFeedback && isSelected;
+          const showCorrectAnswer = showFeedback && isCorrect && !isSelected;
+          const letters = ['A', 'B', 'C', 'D'];
 
           return (
             <Pressable
               key={index}
               onPress={() => handleSelectAnswer(index)}
-              className={`p-4 rounded-xl border-2 ${
+              className={`p-4 rounded-xl border-2 flex-row items-start ${
                 showCorrectness
                   ? isCorrect
                     ? 'bg-green-50 border-green-500'
                     : 'bg-red-50 border-red-500'
+                  : showCorrectAnswer
+                  ? 'bg-green-50 border-green-400'
                   : isSelected
                   ? 'bg-indigo-50 border-indigo-500'
                   : 'bg-white border-slate-200'
               }`}
               disabled={showFeedback}
             >
-              <Text
-                className={`font-medium ${
+              {/* Letter prefix circle */}
+              <View
+                className={`w-8 h-8 rounded-full items-center justify-center mr-3 ${
                   showCorrectness
                     ? isCorrect
-                      ? 'text-green-700'
-                      : 'text-red-700'
-                    : 'text-slate-700'
+                      ? 'bg-green-500'
+                      : 'bg-red-500'
+                    : showCorrectAnswer
+                    ? 'bg-green-500'
+                    : isSelected
+                    ? 'bg-indigo-500'
+                    : 'bg-slate-200'
                 }`}
               >
-                {option.text}
-              </Text>
-              {showFeedback && isSelected && (
                 <Text
-                  className={`text-sm mt-2 ${
-                    isCorrect ? 'text-green-600' : 'text-red-600'
+                  className={`font-bold ${
+                    showCorrectness || showCorrectAnswer || isSelected
+                      ? 'text-white'
+                      : 'text-slate-600'
                   }`}
                 >
-                  {option.feedback}
+                  {letters[index]}
                 </Text>
-              )}
+              </View>
+              <View className="flex-1">
+                <Text
+                  className={`font-medium ${
+                    showCorrectness
+                      ? isCorrect
+                        ? 'text-green-700'
+                        : 'text-red-700'
+                      : showCorrectAnswer
+                      ? 'text-green-700'
+                      : 'text-slate-700'
+                  }`}
+                >
+                  {option.text}
+                </Text>
+                {showFeedback && isSelected && (
+                  <View className="flex-row items-center mt-2">
+                    <Text className="mr-2">{isCorrect ? '✅' : '❌'}</Text>
+                    <Text
+                      className={`text-sm flex-1 ${
+                        isCorrect ? 'text-green-600' : 'text-red-600'
+                      }`}
+                    >
+                      {option.feedback}
+                    </Text>
+                  </View>
+                )}
+                {showCorrectAnswer && (
+                  <View className="flex-row items-center mt-2">
+                    <Text className="mr-2">✅</Text>
+                    <Text className="text-sm text-green-600 flex-1">
+                      This was the correct answer!
+                    </Text>
+                  </View>
+                )}
+              </View>
             </Pressable>
           );
         })}

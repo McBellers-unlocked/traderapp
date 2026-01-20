@@ -171,7 +171,7 @@ export function SortingGame({
       {/* Progress */}
       <View className="px-6 py-2">
         <View className="flex-row items-center">
-          <View className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+          <View className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
             <View
               className="h-full bg-green-500 rounded-full"
               style={{
@@ -179,71 +179,92 @@ export function SortingGame({
               }}
             />
           </View>
-          <Text className="ml-3 text-slate-500 text-sm font-medium">
+          <Text className="ml-3 text-slate-600 text-sm font-bold">
             {items.length - remainingItems.length}/{items.length}
           </Text>
         </View>
       </View>
 
-      {/* Items to sort */}
-      <View className="px-6 py-4">
-        <View className="flex-row flex-wrap gap-3">
-          {remainingItems.map((item) => (
-            <DraggableItem
-              key={item.id}
-              item={item}
-              categories={categories}
-              onDrop={handleDrop}
-            />
-          ))}
-        </View>
-      </View>
-
-      {/* Drop zones */}
-      <View className="flex-1 px-6 pb-6">
-        <View className="flex-row gap-4 flex-1">
+      {/* Drop zones at top for visibility */}
+      <View className="px-6 py-3">
+        <View className="flex-row gap-3">
           {categories.map((category) => (
             <View
               key={category.id}
-              className="flex-1 rounded-2xl p-4 min-h-[200px]"
+              className="flex-1 rounded-xl p-3"
               style={{
                 backgroundColor: `${category.color}15`,
                 borderWidth: 2,
-                borderColor: `${category.color}40`,
-                borderStyle: 'dashed',
+                borderColor: `${category.color}60`,
               }}
             >
-              <View className="items-center mb-3">
-                {category.icon && (
-                  <Text className="text-2xl mb-1">{category.icon}</Text>
-                )}
+              <View className="flex-row items-center justify-center mb-2">
+                <Text className="text-lg mr-2">
+                  {category.id === 'ai' || category.id === 'ai-better' ? '🤖' : '❌'}
+                </Text>
                 <Text
-                  className="font-bold text-center"
+                  className="font-bold text-sm"
                   style={{ color: category.color }}
                 >
                   {category.label}
                 </Text>
               </View>
 
-              {/* Sorted items */}
-              <View className="gap-2">
-                {sortedItems[category.id].map((item) => (
-                  <View
-                    key={item.id}
-                    className="bg-white rounded-lg px-3 py-2"
-                    style={{
-                      borderLeftWidth: 3,
-                      borderLeftColor: category.color,
-                    }}
-                  >
-                    <Text className="text-slate-700 text-sm">{item.content}</Text>
-                  </View>
-                ))}
+              {/* Sorted items count */}
+              <View className="items-center">
+                <Text className="text-slate-500 text-xs">
+                  {sortedItems[category.id].length} sorted
+                </Text>
               </View>
+
+              {/* Show sorted items as small chips */}
+              {sortedItems[category.id].length > 0 && (
+                <View className="flex-row flex-wrap gap-1 mt-2 justify-center">
+                  {sortedItems[category.id].slice(0, 4).map((item) => (
+                    <View
+                      key={item.id}
+                      className="bg-white/80 px-2 py-1 rounded-md"
+                    >
+                      <Text className="text-xs text-slate-600" numberOfLines={1}>
+                        {item.content.substring(0, 15)}...
+                      </Text>
+                    </View>
+                  ))}
+                  {sortedItems[category.id].length > 4 && (
+                    <Text className="text-xs text-slate-400">
+                      +{sortedItems[category.id].length - 4} more
+                    </Text>
+                  )}
+                </View>
+              )}
             </View>
           ))}
         </View>
       </View>
+
+      {/* Current item to sort */}
+      {remainingItems.length > 0 && (
+        <View className="px-6 py-4 flex-1">
+          <Text className="text-center text-slate-500 text-sm mb-3">
+            Tap the correct category for:
+          </Text>
+          <DraggableItem
+            key={remainingItems[0].id}
+            item={remainingItems[0]}
+            categories={categories}
+            onDrop={handleDrop}
+          />
+
+          {/* Remaining items preview */}
+          {remainingItems.length > 1 && (
+            <View className="mt-4 items-center">
+              <Text className="text-slate-400 text-sm">
+                {remainingItems.length - 1} more items remaining
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Feedback overlay */}
       {currentFeedback && (
