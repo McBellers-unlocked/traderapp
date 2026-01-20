@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { SocialAuthButton } from '@/components/ui/SocialAuthButton';
 import { Mascot } from '@/components/ui/Mascot';
+import { StepIndicator } from '@/components/ui/StepIndicator';
 import Svg, { Path, Circle } from 'react-native-svg';
 
 export default function SignupScreen() {
@@ -140,6 +141,9 @@ export default function SignupScreen() {
               <Text className="text-white ml-2 text-base font-medium">Back</Text>
             </Pressable>
           </Link>
+
+          {/* Step indicator */}
+          <StepIndicator currentStep={1} totalSteps={2} />
 
           <View className="flex-row items-center">
             <View className="flex-1">

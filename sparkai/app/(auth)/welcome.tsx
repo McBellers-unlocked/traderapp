@@ -10,20 +10,23 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const onboardingSlides = [
   {
-    title: 'Learn AI the Fun Way!',
-    description: 'Discover how artificial intelligence works through games, stories, and hands-on projects',
+    title: 'Future-Proof Your Child',
+    subtitle: 'AI skills they\'ll use forever',
+    description: 'Kids who understand AI today will lead tomorrow. Give them a head start with fun, age-appropriate lessons.',
     mascotExpression: 'waving' as const,
     backgroundColor: ['#6366F1', '#8B5CF6'] as const,
   },
   {
-    title: 'Interactive Lessons',
-    description: 'Each lesson is designed by educators to make complex AI concepts easy and exciting for kids',
+    title: 'Learn by Doing',
+    subtitle: 'Not just watching',
+    description: 'Interactive projects, games, and quizzes make complex concepts stick. No boring lectures here!',
     mascotExpression: 'excited' as const,
     backgroundColor: ['#8B5CF6', '#A855F7'] as const,
   },
   {
-    title: 'Earn Cool Badges',
-    description: 'Complete challenges, collect achievements, and show off your AI knowledge to friends!',
+    title: 'Track Their Progress',
+    subtitle: 'Celebrate every win',
+    description: 'Earn badges, build streaks, and watch your child grow confident in technology skills.',
     mascotExpression: 'happy' as const,
     backgroundColor: ['#A855F7', '#D946EF'] as const,
   },
@@ -79,10 +82,13 @@ export default function WelcomeScreen() {
                 <Mascot size="xl" expression={slide.mascotExpression} showGlow />
 
                 <View className="mt-8 px-4">
-                  <Text className="text-3xl font-bold text-white text-center mb-4">
+                  <Text className="text-3xl font-bold text-white text-center mb-1">
                     {slide.title}
                   </Text>
-                  <Text className="text-white/90 text-center text-lg leading-relaxed">
+                  <Text className="text-white/70 text-center text-base mb-3 font-medium">
+                    {slide.subtitle}
+                  </Text>
+                  <Text className="text-white/90 text-center text-base leading-relaxed">
                     {slide.description}
                   </Text>
                 </View>
