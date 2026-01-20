@@ -50,10 +50,16 @@ export default function LessonScreen() {
 
   // If we have detailed lesson content, use the new LessonPlayer
   if (detailedContent) {
+    const handleLessonComplete = () => {
+      console.log('Lesson complete, navigating...');
+      // Use replace to go to learn tab since router.back() can be unreliable on web
+      router.replace('/(app)/(tabs)/learn');
+    };
+
     return (
       <LessonPlayer
         lesson={detailedContent}
-        onComplete={() => router.back()}
+        onComplete={handleLessonComplete}
       />
     );
   }
