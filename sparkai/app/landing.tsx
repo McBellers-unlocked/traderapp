@@ -1,7 +1,8 @@
 import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Mascot } from '@/components/ui/Mascot';
+import { Sparky } from '@/components/ui/Sparky';
+import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 import Svg, { Path, Circle } from 'react-native-svg';
 
@@ -15,10 +16,7 @@ export default function LandingPage() {
       >
         {/* Nav */}
         <View className="flex-row items-center justify-between mb-12">
-          <View className="flex-row items-center">
-            <Text className="text-2xl mr-2">🤖</Text>
-            <Text className="text-white font-bold text-xl">SparkAI</Text>
-          </View>
+          <Logo size="md" theme="dark" />
           <Pressable onPress={() => router.push('/login')}>
             <Text className="text-white/90 font-medium">Sign In</Text>
           </Pressable>
@@ -27,7 +25,7 @@ export default function LandingPage() {
         {/* Hero Content */}
         <View className="items-center">
           <View className="mb-6">
-            <Mascot size="lg" expression="waving" />
+            <Sparky size="lg" expression="waving" />
           </View>
 
           <Text className="text-white text-4xl font-bold text-center mb-4">
@@ -272,7 +270,7 @@ export default function LandingPage() {
         className="py-16 px-6"
       >
         <View className="max-w-2xl mx-auto items-center">
-          <Mascot size="md" expression="excited" />
+          <Sparky size="md" expression="celebrating" />
           <Text className="text-white text-3xl font-bold text-center mt-6 mb-4">
             Ready to Start?
           </Text>
@@ -342,8 +340,7 @@ export default function LandingPage() {
       <View className="py-8 px-6 bg-slate-900">
         <View className="max-w-2xl mx-auto">
           <View className="flex-row items-center justify-center mb-4">
-            <Text className="text-2xl mr-2">🤖</Text>
-            <Text className="text-white font-bold text-lg">SparkAI</Text>
+            <Logo size="sm" theme="dark" />
           </View>
           <Text className="text-slate-400 text-center text-sm mb-4">
             AI education for the next generation
