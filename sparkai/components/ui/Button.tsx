@@ -45,7 +45,10 @@ export function Button({
         style={({ pressed }) => ({
           opacity: isDisabled ? 0.6 : pressed ? 0.9 : 1,
           transform: [{ scale: pressed ? 0.98 : 1 }],
+          cursor: 'pointer',
         })}
+        role="button"
+        accessibilityRole="button"
       >
         <LinearGradient
           colors={['#8B5CF6', '#6366F1', '#4F46E5']}
@@ -59,15 +62,19 @@ export function Button({
             shadowOpacity: 0.3,
             shadowRadius: 8,
             elevation: 6,
+            pointerEvents: 'none',
           }}
         >
-          <View className="flex-row items-center justify-center">
+          <View className="flex-row items-center justify-center" style={{ pointerEvents: 'none' }}>
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
               <>
                 {icon && <View className="mr-2">{icon}</View>}
-                <Text className={`text-white font-bold text-center ${textSizes[size]}`}>
+                <Text
+                  className={`text-white font-bold text-center ${textSizes[size]}`}
+                  style={{ pointerEvents: 'none' }}
+                >
                   {title}
                 </Text>
               </>
