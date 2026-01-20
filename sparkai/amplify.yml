@@ -1,0 +1,20 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci --legacy-peer-deps
+        # Create mock worklets plugin (temporary fix for Expo SDK 54)
+        - mkdir -p node_modules/react-native-worklets
+        - echo 'module.exports = function() { return { visitor: {} }; };' > node_modules/react-native-worklets/plugin.js
+        - echo '{"name":"react-native-worklets","main":"plugin.js"}' > node_modules/react-native-worklets/package.json
+    build:
+      commands:
+        - npm run build:web
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
