@@ -5,7 +5,6 @@ interface SparkyProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   expression?: 'happy' | 'thinking' | 'excited' | 'waving' | 'celebrating' | 'curious';
   showGlow?: boolean;
-  animated?: boolean;
 }
 
 export function Sparky({
@@ -22,22 +21,6 @@ export function Sparky({
 
   const actualSize = sizes[size];
 
-  // Eye positions based on expression
-  const getEyeStyle = () => {
-    switch (expression) {
-      case 'thinking':
-        return { leftX: 75, rightX: 115, lookUp: true };
-      case 'curious':
-        return { leftX: 78, rightX: 122, lookUp: false };
-      case 'excited':
-        return { leftX: 78, rightX: 118, lookUp: false, sparkle: true };
-      default:
-        return { leftX: 78, rightX: 118, lookUp: false };
-    }
-  };
-
-  const eyeStyle = getEyeStyle();
-
   return (
     <View className="items-center justify-center">
       {showGlow && (
@@ -47,294 +30,314 @@ export function Sparky({
             width: actualSize * 1.3,
             height: actualSize * 1.3,
             borderRadius: actualSize * 0.65,
-            backgroundColor: '#8B5CF6',
+            backgroundColor: '#7C3AED',
             opacity: 0.15,
           }}
         />
       )}
       <Svg width={actualSize} height={actualSize} viewBox="0 0 200 200">
         <Defs>
-          <LinearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor="#818CF8" />
-            <Stop offset="50%" stopColor="#6366F1" />
-            <Stop offset="100%" stopColor="#4F46E5" />
+          <LinearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <Stop offset="0%" stopColor="#8B5CF6" />
+            <Stop offset="50%" stopColor="#7C3AED" />
+            <Stop offset="100%" stopColor="#5B21B6" />
           </LinearGradient>
-          <LinearGradient id="bodyHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
-            <Stop offset="0%" stopColor="#A5B4FC" />
-            <Stop offset="100%" stopColor="#818CF8" />
+          <LinearGradient id="bodyDark" x1="0%" y1="0%" x2="100%" y2="100%">
+            <Stop offset="0%" stopColor="#6D28D9" />
+            <Stop offset="100%" stopColor="#4C1D95" />
           </LinearGradient>
-          <LinearGradient id="antennaGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+          <LinearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop offset="0%" stopColor="#FDE047" />
             <Stop offset="50%" stopColor="#FBBF24" />
             <Stop offset="100%" stopColor="#F59E0B" />
           </LinearGradient>
-          <LinearGradient id="faceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <LinearGradient id="faceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
             <Stop offset="0%" stopColor="#FFFFFF" />
             <Stop offset="100%" stopColor="#F1F5F9" />
           </LinearGradient>
         </Defs>
 
+        {/* Sparkle effects */}
+        {(expression === 'excited' || expression === 'celebrating' || expression === 'waving') && (
+          <G>
+            <Path d="M 30 40 L 34 48 L 30 56 L 26 48 Z" fill="#FCD34D" />
+            <Path d="M 170 35 L 174 43 L 170 51 L 166 43 Z" fill="#FCD34D" />
+            <Path d="M 25 100 L 28 105 L 25 110 L 22 105 Z" fill="#FCD34D" />
+            <Path d="M 175 95 L 178 100 L 175 105 L 172 100 Z" fill="#FCD34D" />
+          </G>
+        )}
+
         {/* Shadow */}
-        <Ellipse cx="100" cy="185" rx="50" ry="10" fill="#1E293B" opacity={0.1} />
+        <Ellipse cx="100" cy="190" rx="45" ry="8" fill="#1E293B" opacity={0.1} />
+
+        {/* Feet */}
+        <G>
+          <Ellipse cx="70" cy="180" rx="22" ry="12" fill="url(#bodyDark)" />
+          <Ellipse cx="130" cy="180" rx="22" ry="12" fill="url(#bodyDark)" />
+          {/* Foot highlights */}
+          <Ellipse cx="70" cy="177" rx="15" ry="6" fill="#7C3AED" opacity={0.5} />
+          <Ellipse cx="130" cy="177" rx="15" ry="6" fill="#7C3AED" opacity={0.5} />
+        </G>
 
         {/* Body */}
         <G>
-          {/* Main body */}
-          <Circle cx="100" cy="110" r="72" fill="url(#bodyGradient)" />
+          {/* Main body - rounder like new design */}
+          <Ellipse cx="100" cy="130" rx="55" ry="58" fill="url(#bodyGrad)" />
 
           {/* Body highlight */}
           <Path
-            d="M 45 85 Q 50 50 100 45 Q 150 50 155 85 Q 140 70 100 65 Q 60 70 45 85"
-            fill="url(#bodyHighlight)"
-            opacity={0.6}
+            d="M 55 110 Q 60 85 100 80 Q 140 85 145 110"
+            fill="#A78BFA"
+            opacity={0.4}
           />
 
-          {/* Belly plate */}
-          <Ellipse cx="100" cy="140" rx="35" ry="25" fill="#4F46E5" opacity={0.3} />
-          <Ellipse cx="100" cy="138" rx="30" ry="20" fill="#6366F1" opacity={0.3} />
-        </G>
-
-        {/* Ears/Side modules */}
-        <G>
-          {/* Left ear */}
-          <Circle cx="30" cy="95" r="16" fill="url(#bodyGradient)" />
-          <Circle cx="30" cy="95" r="10" fill="#A5B4FC" />
-          <Circle cx="30" cy="95" r="5" fill="#C7D2FE" />
-
-          {/* Right ear */}
-          <Circle cx="170" cy="95" r="16" fill="url(#bodyGradient)" />
-          <Circle cx="170" cy="95" r="10" fill="#A5B4FC" />
-          <Circle cx="170" cy="95" r="5" fill="#C7D2FE" />
-        </G>
-
-        {/* Antenna */}
-        <G>
+          {/* Chest badge */}
+          <Circle cx="100" cy="155" r="16" fill="#5B21B6" />
+          <Circle cx="100" cy="155" r="12" fill="#4C1D95" />
           <Path
-            d="M 100 38 L 100 55"
-            stroke="url(#bodyGradient)"
-            strokeWidth="8"
-            strokeLinecap="round"
+            d="M 97 147 L 104 155 L 99 155 L 104 163 L 95 153 L 101 153 Z"
+            fill="url(#sparkGrad)"
           />
-          {/* Antenna ball with glow effect */}
-          <Circle cx="100" cy="30" r="14" fill="url(#antennaGlow)" />
-          <Circle cx="100" cy="30" r="10" fill="#FDE047" />
-          <Circle cx="96" cy="26" r="4" fill="#FFFFFF" opacity={0.8} />
-
-          {/* Lightning bolt spark */}
-          <Path
-            d="M 96 22 L 104 30 L 99 30 L 106 38 L 94 28 L 100 28 Z"
-            fill="#FFFFFF"
-            opacity={0.9}
-          />
-        </G>
-
-        {/* Face plate */}
-        <G>
-          <Ellipse cx="100" cy="95" rx="52" ry="45" fill="url(#faceGradient)" />
-
-          {/* Face plate border/depth */}
-          <Ellipse
-            cx="100"
-            cy="95"
-            rx="52"
-            ry="45"
-            fill="none"
-            stroke="#E2E8F0"
-            strokeWidth="2"
-          />
-        </G>
-
-        {/* Eyes */}
-        <G>
-          {/* Left eye white */}
-          <Ellipse cx="78" cy="88" rx="16" ry="18" fill="#FFFFFF" />
-          <Ellipse cx="78" cy="88" rx="16" ry="18" fill="none" stroke="#E2E8F0" strokeWidth="1" />
-
-          {/* Left pupil */}
-          <Circle
-            cx={eyeStyle.leftX}
-            cy={eyeStyle.lookUp ? 84 : 90}
-            r="10"
-            fill="#1E293B"
-          />
-          <Circle
-            cx={eyeStyle.leftX + 2}
-            cy={eyeStyle.lookUp ? 81 : 87}
-            r="4"
-            fill="#FFFFFF"
-          />
-          <Circle
-            cx={eyeStyle.leftX - 2}
-            cy={eyeStyle.lookUp ? 86 : 92}
-            r="2"
-            fill="#FFFFFF"
-            opacity={0.6}
-          />
-
-          {/* Right eye white */}
-          <Ellipse cx="122" cy="88" rx="16" ry="18" fill="#FFFFFF" />
-          <Ellipse cx="122" cy="88" rx="16" ry="18" fill="none" stroke="#E2E8F0" strokeWidth="1" />
-
-          {/* Right pupil */}
-          <Circle
-            cx={eyeStyle.rightX}
-            cy={eyeStyle.lookUp ? 84 : 90}
-            r="10"
-            fill="#1E293B"
-          />
-          <Circle
-            cx={eyeStyle.rightX + 2}
-            cy={eyeStyle.lookUp ? 81 : 87}
-            r="4"
-            fill="#FFFFFF"
-          />
-          <Circle
-            cx={eyeStyle.rightX - 2}
-            cy={eyeStyle.lookUp ? 86 : 92}
-            r="2"
-            fill="#FFFFFF"
-            opacity={0.6}
-          />
-
-          {/* Sparkle eyes for excited */}
-          {eyeStyle.sparkle && (
-            <>
-              <Path
-                d="M 66 78 L 68 82 L 64 80 L 68 78 Z"
-                fill="#FBBF24"
-              />
-              <Path
-                d="M 132 78 L 134 82 L 130 80 L 134 78 Z"
-                fill="#FBBF24"
-              />
-            </>
-          )}
-
-          {/* Eyebrows based on expression */}
-          {expression === 'thinking' && (
-            <>
-              <Path d="M 65 72 Q 78 68 90 74" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
-              <Path d="M 110 74 Q 122 68 135 72" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
-            </>
-          )}
-          {expression === 'curious' && (
-            <>
-              <Path d="M 65 74 Q 78 70 90 74" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
-              <Path d="M 110 70 Q 122 66 135 72" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
-            </>
-          )}
-        </G>
-
-        {/* Cheek blush */}
-        <G>
-          <Ellipse cx="55" cy="105" rx="12" ry="7" fill="#FDA4AF" opacity={0.5} />
-          <Ellipse cx="145" cy="105" rx="12" ry="7" fill="#FDA4AF" opacity={0.5} />
-        </G>
-
-        {/* Mouth based on expression */}
-        <G>
-          {expression === 'happy' && (
-            <Path
-              d="M 80 112 Q 100 128 120 112"
-              stroke="#1E293B"
-              strokeWidth="4"
-              strokeLinecap="round"
-              fill="none"
-            />
-          )}
-          {expression === 'excited' && (
-            <>
-              <Ellipse cx="100" cy="118" rx="15" ry="12" fill="#1E293B" />
-              <Ellipse cx="100" cy="114" rx="10" ry="6" fill="#FCA5A5" />
-            </>
-          )}
-          {expression === 'thinking' && (
-            <G>
-              <Circle cx="115" cy="115" r="8" fill="none" stroke="#1E293B" strokeWidth="3" />
-              {/* Thought bubbles */}
-              <Circle cx="145" cy="70" r="5" fill="#E2E8F0" />
-              <Circle cx="160" cy="55" r="8" fill="#E2E8F0" />
-              <Circle cx="175" cy="40" r="12" fill="#E2E8F0" />
-            </G>
-          )}
-          {expression === 'waving' && (
-            <Path
-              d="M 80 112 Q 100 126 120 112"
-              stroke="#1E293B"
-              strokeWidth="4"
-              strokeLinecap="round"
-              fill="none"
-            />
-          )}
-          {expression === 'celebrating' && (
-            <>
-              <Ellipse cx="100" cy="118" rx="18" ry="14" fill="#1E293B" />
-              <Ellipse cx="100" cy="114" rx="12" ry="7" fill="#FCA5A5" />
-              {/* Confetti */}
-              <Circle cx="40" cy="50" r="4" fill="#FBBF24" />
-              <Circle cx="160" cy="45" r="3" fill="#EC4899" />
-              <Circle cx="50" cy="35" r="3" fill="#10B981" />
-              <Circle cx="150" cy="30" r="4" fill="#6366F1" />
-              <Rect x="30" y="60" width="6" height="6" fill="#F59E0B" transform="rotate(45, 33, 63)" />
-              <Rect x="165" y="55" width="5" height="5" fill="#8B5CF6" transform="rotate(30, 167, 57)" />
-            </>
-          )}
-          {expression === 'curious' && (
-            <Ellipse cx="100" cy="116" rx="8" ry="10" fill="#1E293B" />
-          )}
         </G>
 
         {/* Arms */}
         <G>
-          {/* Left arm (always visible) */}
-          <Path
-            d="M 35 120 Q 25 140 30 160"
-            stroke="url(#bodyGradient)"
-            strokeWidth="14"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <Circle cx="30" cy="165" r="10" fill="#A5B4FC" />
-
-          {/* Right arm - waving or normal */}
-          {(expression === 'waving' || expression === 'celebrating') ? (
+          {/* Left arm */}
+          {expression === 'waving' || expression === 'celebrating' ? (
             <G>
+              {/* Waving left arm */}
               <Path
-                d="M 165 120 Q 185 90 190 60"
-                stroke="url(#bodyGradient)"
-                strokeWidth="14"
+                d="M 50 120 Q 25 100 20 70"
+                stroke="url(#bodyGrad)"
+                strokeWidth="18"
                 strokeLinecap="round"
                 fill="none"
               />
-              <Circle cx="190" cy="55" r="10" fill="#A5B4FC" />
+              <Circle cx="20" cy="65" r="12" fill="#A78BFA" />
+              <Circle cx="20" cy="65" r="7" fill="#C4B5FD" />
               {/* Motion lines */}
-              <Path d="M 195 45 L 205 40" stroke="#A5B4FC" strokeWidth="3" strokeLinecap="round" />
-              <Path d="M 198 55 L 210 55" stroke="#A5B4FC" strokeWidth="3" strokeLinecap="round" />
-              <Path d="M 195 65 L 205 70" stroke="#A5B4FC" strokeWidth="3" strokeLinecap="round" />
+              <Path d="M 8 55 L 3 50" stroke="#A78BFA" strokeWidth="3" strokeLinecap="round" />
+              <Path d="M 5 65 L -2 65" stroke="#A78BFA" strokeWidth="3" strokeLinecap="round" />
+              <Path d="M 8 75 L 3 80" stroke="#A78BFA" strokeWidth="3" strokeLinecap="round" />
             </G>
           ) : (
             <G>
+              {/* Normal left arm */}
               <Path
-                d="M 165 120 Q 175 140 170 160"
-                stroke="url(#bodyGradient)"
-                strokeWidth="14"
+                d="M 50 125 Q 30 140 25 165"
+                stroke="url(#bodyGrad)"
+                strokeWidth="18"
                 strokeLinecap="round"
                 fill="none"
               />
-              <Circle cx="170" cy="165" r="10" fill="#A5B4FC" />
+              <Circle cx="25" cy="170" r="12" fill="#A78BFA" />
+              <Circle cx="25" cy="170" r="7" fill="#C4B5FD" />
+            </G>
+          )}
+
+          {/* Right arm */}
+          {expression === 'celebrating' ? (
+            <G>
+              {/* Celebrating right arm (also raised) */}
+              <Path
+                d="M 150 120 Q 175 100 180 70"
+                stroke="url(#bodyGrad)"
+                strokeWidth="18"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <Circle cx="180" cy="65" r="12" fill="#A78BFA" />
+              <Circle cx="180" cy="65" r="7" fill="#C4B5FD" />
+            </G>
+          ) : (
+            <G>
+              {/* Normal right arm */}
+              <Path
+                d="M 150 125 Q 170 140 175 165"
+                stroke="url(#bodyGrad)"
+                strokeWidth="18"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <Circle cx="175" cy="170" r="12" fill="#A78BFA" />
+              <Circle cx="175" cy="170" r="7" fill="#C4B5FD" />
             </G>
           )}
         </G>
 
-        {/* Feet */}
+        {/* Head/Face area */}
         <G>
-          <Ellipse cx="75" cy="178" rx="18" ry="10" fill="url(#bodyGradient)" />
-          <Ellipse cx="125" cy="178" rx="18" ry="10" fill="url(#bodyGradient)" />
+          {/* Head base */}
+          <Circle cx="100" cy="70" r="50" fill="url(#bodyGrad)" />
+
+          {/* Helmet/face plate */}
+          <Path
+            d="M 55 65 Q 55 30 100 25 Q 145 30 145 65 L 145 85 Q 145 110 100 115 Q 55 110 55 85 Z"
+            fill="url(#faceGrad)"
+          />
+
+          {/* Face plate border */}
+          <Path
+            d="M 55 65 Q 55 30 100 25 Q 145 30 145 65 L 145 85 Q 145 110 100 115 Q 55 110 55 85 Z"
+            fill="none"
+            stroke="#E2E8F0"
+            strokeWidth="2"
+          />
+
+          {/* Eyes */}
+          <G>
+            {/* Left eye */}
+            <Ellipse cx="80" cy="65" rx="15" ry="18" fill="#FFFFFF" />
+            <Circle
+              cx={expression === 'thinking' ? 76 : expression === 'curious' ? 84 : 80}
+              cy={expression === 'thinking' ? 60 : 67}
+              r="10"
+              fill="#1E293B"
+            />
+            <Circle
+              cx={expression === 'thinking' ? 78 : expression === 'curious' ? 86 : 82}
+              cy={expression === 'thinking' ? 57 : 64}
+              r="4"
+              fill="#FFFFFF"
+            />
+            <Circle
+              cx={expression === 'thinking' ? 74 : expression === 'curious' ? 82 : 78}
+              cy={expression === 'thinking' ? 62 : 69}
+              r="2"
+              fill="#FFFFFF"
+              opacity={0.5}
+            />
+
+            {/* Right eye */}
+            <Ellipse cx="120" cy="65" rx="15" ry="18" fill="#FFFFFF" />
+            <Circle
+              cx={expression === 'thinking' ? 116 : expression === 'curious' ? 124 : 120}
+              cy={expression === 'thinking' ? 60 : 67}
+              r="10"
+              fill="#1E293B"
+            />
+            <Circle
+              cx={expression === 'thinking' ? 118 : expression === 'curious' ? 126 : 122}
+              cy={expression === 'thinking' ? 57 : 64}
+              r="4"
+              fill="#FFFFFF"
+            />
+            <Circle
+              cx={expression === 'thinking' ? 114 : expression === 'curious' ? 122 : 118}
+              cy={expression === 'thinking' ? 62 : 69}
+              r="2"
+              fill="#FFFFFF"
+              opacity={0.5}
+            />
+
+            {/* Sparkle eyes for excited/celebrating */}
+            {(expression === 'excited' || expression === 'celebrating') && (
+              <G>
+                <Path d="M 65 52 L 68 58 L 65 64 L 62 58 Z" fill="#FCD34D" />
+                <Path d="M 135 52 L 138 58 L 135 64 L 132 58 Z" fill="#FCD34D" />
+              </G>
+            )}
+          </G>
+
+          {/* Rosy cheeks */}
+          <Ellipse cx="55" cy="80" rx="10" ry="6" fill="#FDA4AF" opacity={0.6} />
+          <Ellipse cx="145" cy="80" rx="10" ry="6" fill="#FDA4AF" opacity={0.6} />
+
+          {/* Eyebrows for thinking/curious */}
+          {expression === 'thinking' && (
+            <G>
+              <Path d="M 65 48 Q 80 42 92 50" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
+              <Path d="M 108 50 Q 120 42 135 48" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
+            </G>
+          )}
+          {expression === 'curious' && (
+            <G>
+              <Path d="M 65 50 Q 80 46 92 50" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
+              <Path d="M 108 46 Q 120 42 135 50" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
+            </G>
+          )}
+
+          {/* Mouth */}
+          {expression === 'happy' && (
+            <Path
+              d="M 80 92 Q 100 108 120 92"
+              stroke="#1E293B"
+              strokeWidth="4"
+              strokeLinecap="round"
+              fill="none"
+            />
+          )}
+          {expression === 'waving' && (
+            <Path
+              d="M 80 92 Q 100 106 120 92"
+              stroke="#1E293B"
+              strokeWidth="4"
+              strokeLinecap="round"
+              fill="none"
+            />
+          )}
+          {(expression === 'excited' || expression === 'celebrating') && (
+            <G>
+              <Ellipse cx="100" cy="95" rx="15" ry="12" fill="#1E293B" />
+              <Ellipse cx="100" cy="92" rx="10" ry="6" fill="#FCA5A5" />
+            </G>
+          )}
+          {expression === 'thinking' && (
+            <G>
+              <Circle cx="110" cy="95" r="6" fill="none" stroke="#1E293B" strokeWidth="3" />
+              {/* Thought bubbles */}
+              <Circle cx="145" cy="50" r="5" fill="#E2E8F0" />
+              <Circle cx="158" cy="38" r="7" fill="#E2E8F0" />
+              <Circle cx="172" cy="25" r="10" fill="#E2E8F0" />
+            </G>
+          )}
+          {expression === 'curious' && (
+            <Ellipse cx="100" cy="95" rx="8" ry="10" fill="#1E293B" />
+          )}
         </G>
+
+        {/* Ear pieces */}
+        <G>
+          <Circle cx="48" cy="70" r="12" fill="url(#bodyGrad)" />
+          <Circle cx="48" cy="70" r="7" fill="#A78BFA" />
+          <Circle cx="48" cy="70" r="3" fill="#C4B5FD" />
+
+          <Circle cx="152" cy="70" r="12" fill="url(#bodyGrad)" />
+          <Circle cx="152" cy="70" r="7" fill="#A78BFA" />
+          <Circle cx="152" cy="70" r="3" fill="#C4B5FD" />
+        </G>
+
+        {/* Antenna */}
+        <G>
+          <Rect x="92" y="5" width="16" height="22" rx="5" fill="#5B21B6" />
+
+          {/* Lightning bolt */}
+          <Path
+            d="M 96 -8 L 108 8 L 100 8 L 106 22 L 92 5 L 100 5 Z"
+            fill="url(#sparkGrad)"
+          />
+
+          {/* Glow effect */}
+          <Circle cx="100" cy="2" r="8" fill="#FDE047" opacity={0.3} />
+        </G>
+
+        {/* Confetti for celebrating */}
+        {expression === 'celebrating' && (
+          <G>
+            <Circle cx="35" cy="30" r="4" fill="#FBBF24" />
+            <Circle cx="165" cy="25" r="3" fill="#EC4899" />
+            <Circle cx="45" cy="15" r="3" fill="#10B981" />
+            <Circle cx="155" cy="15" r="4" fill="#6366F1" />
+            <Rect x="25" y="45" width="6" height="6" fill="#F59E0B" transform="rotate(45, 28, 48)" />
+            <Rect x="170" y="40" width="5" height="5" fill="#8B5CF6" transform="rotate(30, 172, 42)" />
+            <Circle cx="20" cy="60" r="3" fill="#F472B6" />
+            <Circle cx="180" cy="55" r="3" fill="#34D399" />
+          </G>
+        )}
       </Svg>
     </View>
   );
 }
 
-// Export old Mascot as alias for backwards compatibility
+// Keep backwards compatibility
 export { Sparky as ImprovedMascot };
