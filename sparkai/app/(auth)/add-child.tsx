@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
   Pressable,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuthStore } from '@/lib/stores';
+import { supabase } from '@/lib/supabase';
 import { AVATAR_OPTIONS } from '@/types';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -18,13 +20,43 @@ import { StepIndicator } from '@/components/ui/StepIndicator';
 import Svg, { Path, Circle } from 'react-native-svg';
 
 export default function AddChildScreen() {
-  const { parent, addChild } = useAuthStore();
+  const { parent, addChild, setParent } = useAuthStore();
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(AVATAR_OPTIONS[0].id);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingParent, setIsFetchingParent] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; age?: string }>({});
   const [showAgeInfo, setShowAgeInfo] = useState(false);
+
+  // Fetch parent data if not available (fallback)
+  useEffect(() => {
+    const fetchParentIfNeeded = async () => {
+      if (parent) return;
+
+      setIsFetchingParent(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: parentData } = await supabase
+            .from('parents')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+
+          if (parentData) {
+            setParent(parentData);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch parent:', error);
+      } finally {
+        setIsFetchingParent(false);
+      }
+    };
+
+    fetchParentIfNeeded();
+  }, [parent, setParent]);
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -73,6 +105,16 @@ export default function AddChildScreen() {
       setIsLoading(false);
     }
   };
+
+  // Show loading while fetching parent data
+  if (isFetchingParent) {
+    return (
+      <View className="flex-1 bg-slate-50 items-center justify-center">
+        <ActivityIndicator size="large" color="#6366F1" />
+        <Text className="text-slate-500 mt-4">Setting up your account...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView

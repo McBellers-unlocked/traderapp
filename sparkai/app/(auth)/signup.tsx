@@ -11,6 +11,7 @@ import {
 import { Link, router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { signUp, supabase, signInWithGoogle, signInWithApple } from '@/lib/supabase';
+import { useAuthStore } from '@/lib/stores';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { SocialAuthButton } from '@/components/ui/SocialAuthButton';
@@ -59,13 +60,20 @@ export default function SignupScreen() {
 
       if (data.user) {
         // Create parent record
-        const { error: parentError } = await supabase.from('parents').insert({
-          user_id: data.user.id,
-          email: email,
-        });
+        const { data: parentData, error: parentError } = await supabase
+          .from('parents')
+          .insert({
+            user_id: data.user.id,
+            email: email,
+          })
+          .select()
+          .single();
 
         if (parentError) {
           console.error('Failed to create parent record:', parentError);
+        } else if (parentData) {
+          // Update the auth store with the new parent
+          useAuthStore.getState().setParent(parentData);
         }
 
         // Navigate to add child
