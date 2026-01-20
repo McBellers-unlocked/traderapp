@@ -1,10 +1,13 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Button } from '@/components/ui/Button';
 import Svg, { Path, Circle } from 'react-native-svg';
-import { Logo } from '@/components/ui/Logo';
-import { Sparky } from '@/components/ui/Sparky';
+
+// Brand images
+const LogoFullImage = require('@/assets/images/logo-full.png');
+const SparkyImage = require('@/assets/images/sparky.png');
+const WordmarkImage = require('@/assets/images/wordmark.png');
 
 export default function LandingPage() {
   return (
@@ -16,7 +19,11 @@ export default function LandingPage() {
       >
         {/* Nav */}
         <View className="flex-row items-center justify-between mb-12">
-          <Logo size="md" variant="full" theme="dark" />
+          <Image
+            source={LogoFullImage}
+            style={{ width: 150, height: 50 }}
+            resizeMode="contain"
+          />
           <Pressable onPress={() => router.push('/login')}>
             <Text className="text-white/90 font-medium">Sign In</Text>
           </Pressable>
@@ -25,7 +32,11 @@ export default function LandingPage() {
         {/* Hero Content */}
         <View className="items-center">
           <View className="mb-6">
-            <Sparky size="xl" expression="waving" showGlow={false} />
+            <Image
+              source={SparkyImage}
+              style={{ width: 200, height: 200 }}
+              resizeMode="contain"
+            />
           </View>
 
           <Text className="text-white text-4xl font-bold text-center mb-4">
@@ -270,7 +281,11 @@ export default function LandingPage() {
         className="py-16 px-6"
       >
         <View className="max-w-2xl mx-auto items-center">
-          <Sparky size="lg" expression="celebrating" showGlow={false} />
+          <Image
+            source={SparkyImage}
+            style={{ width: 150, height: 150 }}
+            resizeMode="contain"
+          />
           <Text className="text-white text-3xl font-bold text-center mt-6 mb-4">
             Ready to Start?
           </Text>
@@ -340,7 +355,11 @@ export default function LandingPage() {
       <View className="py-8 px-6 bg-slate-900">
         <View className="max-w-2xl mx-auto">
           <View className="flex-row items-center justify-center mb-4">
-            <Logo size="sm" variant="wordmark" theme="dark" />
+            <Image
+              source={WordmarkImage}
+              style={{ width: 120, height: 40 }}
+              resizeMode="contain"
+            />
           </View>
           <Text className="text-slate-400 text-center text-sm mb-4">
             AI education for the next generation
