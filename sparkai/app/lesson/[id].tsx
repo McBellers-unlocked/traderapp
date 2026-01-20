@@ -9,7 +9,9 @@ import { useAuthStore, useProgressStore } from '@/lib/stores';
 import { LessonPlayer } from '@/components/lessons/LessonPlayer';
 
 export default function LessonScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id: string }>();
+  const id = typeof params.id === 'string' ? params.id : params.id?.[0];
+
   const { activeChild } = useAuthStore();
   const { updateLessonProgress, completeLessonWithDetails } = useProgressStore();
 
@@ -17,8 +19,11 @@ export default function LessonScreen() {
   const [startTime] = useState(Date.now());
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
 
-  const lessonData = getLessonById(id);
-  const detailedContent = getLessonContent(id);
+  const lessonData = getLessonById(id || '');
+  const detailedContent = id ? getLessonContent(id) : undefined;
+
+  // Debug log
+  console.log('Lesson ID:', id, 'Has detailed content:', !!detailedContent);
 
   useEffect(() => {
     // Mark lesson as in progress when starting
