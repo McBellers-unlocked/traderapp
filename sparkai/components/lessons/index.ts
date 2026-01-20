@@ -1,4 +1,3 @@
-// Lesson-specific components will be added here
-// These include interactive components for different lesson types
-
-export {};
+export { SortingGame } from './SortingGame';
+export { MultipleChoiceQuiz } from './MultipleChoiceQuiz';
+export { ContentCard, ContentList, ComparisonCard } from './ContentCard';
