@@ -297,6 +297,47 @@ export default function LandingPage() {
         </View>
       </LinearGradient>
 
+      {/* FAQ Section */}
+      <View className="py-16 px-6 bg-white">
+        <View className="max-w-2xl mx-auto">
+          <Text className="text-3xl font-bold text-slate-800 text-center mb-8">
+            Common Questions
+          </Text>
+
+          <View className="gap-4">
+            <FAQItem
+              question="What age is SparkAI for?"
+              answer="SparkAI is designed for children ages 8-12, but curious kids as young as 6 or teens up to 14 can enjoy it too!"
+            />
+            <FAQItem
+              question="Do kids need to know how to code?"
+              answer="Not at all! SparkAI teaches AI concepts through stories, games, and activities—no coding required."
+            />
+            <FAQItem
+              question="How long are the lessons?"
+              answer="Each lesson takes about 5-10 minutes, perfect for short attention spans and busy schedules."
+            />
+            <FAQItem
+              question="Can I try before I pay?"
+              answer="Yes! Module 1 (3 full lessons) is completely free. No credit card required to start."
+            />
+            <FAQItem
+              question="Is my child's data safe?"
+              answer="Absolutely. We collect minimal data, never show ads, and comply with COPPA regulations for children's privacy."
+            />
+          </View>
+        </View>
+      </View>
+
+      {/* Urgency Banner */}
+      <View className="bg-amber-400 py-4 px-6">
+        <View className="max-w-2xl mx-auto flex-row items-center justify-center">
+          <Text className="text-slate-900 font-bold text-center">
+            🚀 Launch Special: Get 40% off annual plans this month!
+          </Text>
+        </View>
+      </View>
+
       {/* Footer */}
       <View className="py-8 px-6 bg-slate-900">
         <View className="max-w-2xl mx-auto">
@@ -504,6 +545,16 @@ function PricingCard({
           {buttonText}
         </Text>
       </Pressable>
+    </View>
+  );
+}
+
+// Component: FAQ Item
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+  return (
+    <View className="bg-slate-50 rounded-2xl p-5">
+      <Text className="font-bold text-slate-800 text-lg mb-2">{question}</Text>
+      <Text className="text-slate-600">{answer}</Text>
     </View>
   );
 }
