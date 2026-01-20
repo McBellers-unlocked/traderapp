@@ -3,11 +3,8 @@ frontend:
   phases:
     preBuild:
       commands:
-        - cd sparkai
-        - npm ci --legacy-peer-deps
-        - mkdir -p node_modules/react-native-worklets
-        - "echo 'module.exports = function() { return { visitor: {} }; };' > node_modules/react-native-worklets/plugin.js"
-        - "echo '{\"name\":\"react-native-worklets\",\"main\":\"plugin.js\"}' > node_modules/react-native-worklets/package.json"
+        - cd sparkai && npm ci --legacy-peer-deps
+        - cd sparkai && mkdir -p node_modules/react-native-worklets && echo 'module.exports = function() { return { visitor: {} }; };' > node_modules/react-native-worklets/plugin.js && echo '{"name":"react-native-worklets","main":"plugin.js"}' > node_modules/react-native-worklets/package.json
     build:
       commands:
         - cd sparkai && npm run build:web
