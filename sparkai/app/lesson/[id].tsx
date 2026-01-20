@@ -3,19 +3,22 @@ import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getLessonById } from '@/constants/curriculum';
+import { getLessonContent } from '@/constants/lessonContent';
 import { moduleThemes } from '@/constants/theme';
 import { useAuthStore, useProgressStore } from '@/lib/stores';
+import { LessonPlayer } from '@/components/lessons/LessonPlayer';
 
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { activeChild } = useAuthStore();
-  const { updateLessonProgress, completeLesson } = useProgressStore();
+  const { updateLessonProgress, completeLessonWithDetails } = useProgressStore();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [startTime] = useState(Date.now());
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
 
   const lessonData = getLessonById(id);
+  const detailedContent = getLessonContent(id);
 
   useEffect(() => {
     // Mark lesson as in progress when starting
@@ -40,6 +43,17 @@ export default function LessonScreen() {
     );
   }
 
+  // If we have detailed lesson content, use the new LessonPlayer
+  if (detailedContent) {
+    return (
+      <LessonPlayer
+        lesson={detailedContent}
+        onComplete={() => router.back()}
+      />
+    );
+  }
+
+  // Fallback to the basic rendering for lessons without detailed content
   const { module, lesson } = lessonData;
   const moduleIndex = parseInt(module.id.split('-')[1]) as 1 | 2 | 3 | 4 | 5;
   const theme = moduleThemes[moduleIndex.toString() as keyof typeof moduleThemes];
@@ -64,7 +78,11 @@ export default function LessonScreen() {
   };
 
   const handleComplete = async () => {
-    if (!activeChild) return;
+    if (!activeChild) {
+      // Demo mode - just go back
+      router.back();
+      return;
+    }
 
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
 
@@ -79,7 +97,7 @@ export default function LessonScreen() {
       score = Math.round((correctAnswers / quiz.questions.length) * 100);
     }
 
-    await completeLesson(activeChild.id, lesson.id, module.id, score, timeSpent);
+    await completeLessonWithDetails(activeChild.id, lesson.id, module.id, score, timeSpent);
 
     Alert.alert(
       'Great job! 🎉',

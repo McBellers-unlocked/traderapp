@@ -9,6 +9,7 @@ interface ProgressState {
   streak: Streak | null;
   projects: Project[];
   isLoading: boolean;
+  totalXp: number;
 
   // Getters
   getProgressForLesson: (lessonId: string) => LessonProgress | undefined;
@@ -19,6 +20,10 @@ interface ProgressState {
   // Actions
   setIsLoading: (loading: boolean) => void;
 
+  // Simple actions for demo mode
+  completeLesson: (lessonId: string) => void;
+  addXp: (xp: number) => void;
+
   // Async actions
   fetchProgress: (childId: string) => Promise<void>;
   updateLessonProgress: (
@@ -27,7 +32,7 @@ interface ProgressState {
     moduleId: string,
     updates: Partial<LessonProgress>
   ) => Promise<void>;
-  completeLesson: (
+  completeLessonWithDetails: (
     childId: string,
     lessonId: string,
     moduleId: string,
@@ -55,6 +60,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   streak: null,
   projects: [],
   isLoading: false,
+  totalXp: 0,
 
   // Getters
   getProgressForLesson: (lessonId) => get().lessonProgress[lessonId],
@@ -84,6 +90,32 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
   // Setters
   setIsLoading: (isLoading) => set({ isLoading }),
+
+  // Simple actions for demo mode (no database)
+  completeLesson: (lessonId) => {
+    set((state) => ({
+      lessonProgress: {
+        ...state.lessonProgress,
+        [lessonId]: {
+          id: `demo-${lessonId}`,
+          child_id: 'demo-child',
+          lesson_id: lessonId,
+          module_id: lessonId.split('-').slice(0, 2).join('-'),
+          status: 'completed' as LessonStatus,
+          score: 100,
+          time_spent_seconds: 0,
+          completed_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+        } as LessonProgress,
+      },
+    }));
+  },
+
+  addXp: (xp) => {
+    set((state) => ({
+      totalXp: state.totalXp + xp,
+    }));
+  },
 
   // Fetch all progress for a child
   fetchProgress: async (childId) => {
@@ -170,8 +202,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     }
   },
 
-  // Complete a lesson
-  completeLesson: async (childId, lessonId, moduleId, score, timeSpent) => {
+  // Complete a lesson with full details (for database)
+  completeLessonWithDetails: async (childId, lessonId, moduleId, score, timeSpent) => {
     await get().updateLessonProgress(childId, lessonId, moduleId, {
       status: 'completed',
       score,
