@@ -188,14 +188,23 @@ function ContentScreen({
   mascotExpression?: string;
   onContinue: () => void;
 }) {
-  const expression = (mascotExpression || 'default') as 'default' | 'happy' | 'excited' | 'thinking';
+  // Map mascot expressions to valid Mascot component expressions
+  const getExpression = (): 'happy' | 'thinking' | 'excited' | 'waving' => {
+    switch (mascotExpression) {
+      case 'excited': return 'excited';
+      case 'thinking': return 'thinking';
+      case 'explaining': return 'thinking'; // Map explaining to thinking
+      case 'happy': return 'happy';
+      default: return 'happy'; // Default to happy
+    }
+  };
 
   return (
     <View className="flex-1 p-6">
       {data.mascotMessage ? (
         <View className="mb-6">
           <View className="items-center mb-4">
-            <Mascot size="md" expression={expression} />
+            <Mascot size="md" expression={getExpression()} />
           </View>
           <View className="bg-white rounded-2xl p-4 shadow-sm">
             <Text className="text-slate-700 text-base leading-relaxed">
