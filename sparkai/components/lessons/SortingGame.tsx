@@ -337,22 +337,34 @@ function DraggableItem({
       <Text className="text-slate-800 font-medium">{item.content}</Text>
 
       {/* Category selection buttons */}
-      <View className="flex-row gap-2 mt-3">
-        {categories.map((category) => (
-          <Pressable
-            key={category.id}
-            onPress={() => onDrop(item, category.id)}
-            className="flex-1 rounded-lg py-2 items-center"
-            style={{ backgroundColor: `${category.color}20` }}
-          >
-            <Text
-              className="text-xs font-semibold"
-              style={{ color: category.color }}
+      <View className="flex-row gap-3 mt-3">
+        {categories.map((category, index) => {
+          // Use distinct colors for better visual appeal
+          const isAiCategory = category.id === 'ai' || category.id === 'ai-better';
+          const bgColor = isAiCategory ? '#818CF8' : '#F472B6'; // Indigo vs Pink
+          const icon = isAiCategory ? '🤖' : '❌';
+
+          return (
+            <Pressable
+              key={category.id}
+              onPress={() => onDrop(item, category.id)}
+              className="flex-1 rounded-xl py-3 items-center flex-row justify-center"
+              style={{
+                backgroundColor: bgColor,
+                shadowColor: bgColor,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
             >
-              {category.label.split(' ')[0]}
-            </Text>
-          </Pressable>
-        ))}
+              <Text className="mr-2">{icon}</Text>
+              <Text className="text-white font-bold">
+                {isAiCategory ? 'Uses AI' : 'No AI'}
+              </Text>
+            </Pressable>
+          );
+        })}
       </View>
     </Pressable>
   );
