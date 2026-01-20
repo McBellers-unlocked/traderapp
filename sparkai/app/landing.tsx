@@ -11,7 +11,7 @@ export default function LandingPage() {
     <ScrollView className="flex-1 bg-white">
       {/* Hero Section */}
       <LinearGradient
-        colors={['#6366F1', '#8B5CF6', '#A855F7']}
+        colors={['#7C3AED', '#8B5CF6', '#A78BFA']}
         className="pt-16 pb-20 px-6"
       >
         {/* Nav */}
@@ -266,7 +266,7 @@ export default function LandingPage() {
 
       {/* Final CTA */}
       <LinearGradient
-        colors={['#6366F1', '#8B5CF6']}
+        colors={['#7C3AED', '#8B5CF6']}
         className="py-16 px-6"
       >
         <View className="max-w-2xl mx-auto items-center">

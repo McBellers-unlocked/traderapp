@@ -43,8 +43,8 @@ export function Sparky({
             <Stop offset="100%" stopColor="#5B21B6" />
           </LinearGradient>
           <LinearGradient id="bodyDark" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor="#6D28D9" />
-            <Stop offset="100%" stopColor="#4C1D95" />
+            <Stop offset="0%" stopColor="#3B1D6B" />
+            <Stop offset="100%" stopColor="#2D1750" />
           </LinearGradient>
           <LinearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop offset="0%" stopColor="#FDE047" />
@@ -113,8 +113,8 @@ export function Sparky({
                 strokeLinecap="round"
                 fill="none"
               />
-              <Circle cx="20" cy="65" r="12" fill="#A78BFA" />
-              <Circle cx="20" cy="65" r="7" fill="#C4B5FD" />
+              <Circle cx="20" cy="65" r="12" fill="#3B1D6B" />
+              <Circle cx="20" cy="65" r="7" fill="#5B21B6" />
               {/* Motion lines */}
               <Path d="M 8 55 L 3 50" stroke="#A78BFA" strokeWidth="3" strokeLinecap="round" />
               <Path d="M 5 65 L -2 65" stroke="#A78BFA" strokeWidth="3" strokeLinecap="round" />
@@ -130,8 +130,8 @@ export function Sparky({
                 strokeLinecap="round"
                 fill="none"
               />
-              <Circle cx="25" cy="170" r="12" fill="#A78BFA" />
-              <Circle cx="25" cy="170" r="7" fill="#C4B5FD" />
+              <Circle cx="25" cy="170" r="12" fill="#3B1D6B" />
+              <Circle cx="25" cy="170" r="7" fill="#5B21B6" />
             </G>
           )}
 
@@ -146,8 +146,8 @@ export function Sparky({
                 strokeLinecap="round"
                 fill="none"
               />
-              <Circle cx="180" cy="65" r="12" fill="#A78BFA" />
-              <Circle cx="180" cy="65" r="7" fill="#C4B5FD" />
+              <Circle cx="180" cy="65" r="12" fill="#3B1D6B" />
+              <Circle cx="180" cy="65" r="7" fill="#5B21B6" />
             </G>
           ) : (
             <G>
@@ -159,8 +159,8 @@ export function Sparky({
                 strokeLinecap="round"
                 fill="none"
               />
-              <Circle cx="175" cy="170" r="12" fill="#A78BFA" />
-              <Circle cx="175" cy="170" r="7" fill="#C4B5FD" />
+              <Circle cx="175" cy="170" r="12" fill="#3B1D6B" />
+              <Circle cx="175" cy="170" r="7" fill="#5B21B6" />
             </G>
           )}
         </G>
@@ -243,7 +243,13 @@ export function Sparky({
           <Ellipse cx="55" cy="80" rx="10" ry="6" fill="#FDA4AF" opacity={0.6} />
           <Ellipse cx="145" cy="80" rx="10" ry="6" fill="#FDA4AF" opacity={0.6} />
 
-          {/* Eyebrows for thinking/curious */}
+          {/* Eyebrows */}
+          {(expression === 'happy' || expression === 'waving' || expression === 'excited' || expression === 'celebrating') && (
+            <G>
+              <Path d="M 67 48 Q 80 44 92 48" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
+              <Path d="M 108 48 Q 120 44 133 48" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
+            </G>
+          )}
           {expression === 'thinking' && (
             <G>
               <Path d="M 65 48 Q 80 42 92 50" stroke="#64748B" strokeWidth="3" strokeLinecap="round" fill="none" />
@@ -259,27 +265,33 @@ export function Sparky({
 
           {/* Mouth */}
           {expression === 'happy' && (
-            <Path
-              d="M 80 92 Q 100 108 120 92"
-              stroke="#1E293B"
-              strokeWidth="4"
-              strokeLinecap="round"
-              fill="none"
-            />
+            <G>
+              {/* Open happy mouth */}
+              <Path
+                d="M 78 88 Q 100 110 122 88"
+                fill="#1E293B"
+              />
+              {/* Tongue */}
+              <Ellipse cx="100" cy="100" rx="8" ry="5" fill="#F87171" />
+            </G>
           )}
           {expression === 'waving' && (
-            <Path
-              d="M 80 92 Q 100 106 120 92"
-              stroke="#1E293B"
-              strokeWidth="4"
-              strokeLinecap="round"
-              fill="none"
-            />
+            <G>
+              {/* Open waving mouth */}
+              <Path
+                d="M 78 88 Q 100 110 122 88"
+                fill="#1E293B"
+              />
+              {/* Tongue */}
+              <Ellipse cx="100" cy="100" rx="8" ry="5" fill="#F87171" />
+            </G>
           )}
           {(expression === 'excited' || expression === 'celebrating') && (
             <G>
-              <Ellipse cx="100" cy="95" rx="15" ry="12" fill="#1E293B" />
-              <Ellipse cx="100" cy="92" rx="10" ry="6" fill="#FCA5A5" />
+              {/* Wide open excited mouth */}
+              <Ellipse cx="100" cy="95" rx="18" ry="14" fill="#1E293B" />
+              {/* Tongue */}
+              <Ellipse cx="100" cy="100" rx="10" ry="6" fill="#F87171" />
             </G>
           )}
           {expression === 'thinking' && (
@@ -299,12 +311,12 @@ export function Sparky({
         {/* Ear pieces */}
         <G>
           <Circle cx="48" cy="70" r="12" fill="url(#bodyGrad)" />
-          <Circle cx="48" cy="70" r="7" fill="#A78BFA" />
-          <Circle cx="48" cy="70" r="3" fill="#C4B5FD" />
+          <Circle cx="48" cy="70" r="8" fill="#F1F5F9" />
+          <Circle cx="48" cy="70" r="4" fill="#FFFFFF" />
 
           <Circle cx="152" cy="70" r="12" fill="url(#bodyGrad)" />
-          <Circle cx="152" cy="70" r="7" fill="#A78BFA" />
-          <Circle cx="152" cy="70" r="3" fill="#C4B5FD" />
+          <Circle cx="152" cy="70" r="8" fill="#F1F5F9" />
+          <Circle cx="152" cy="70" r="4" fill="#FFFFFF" />
         </G>
 
         {/* Antenna */}
