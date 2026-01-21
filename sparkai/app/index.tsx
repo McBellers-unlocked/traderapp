@@ -5,8 +5,9 @@ import { useAuthStore } from '@/lib/stores';
 import { supabase } from '@/lib/supabase';
 
 export default function Index() {
-  const { isAuthenticated, isLoading, children, activeChild, setParent } = useAuthStore();
+  const { isAuthenticated, isLoading, children, setParent } = useAuthStore();
   const [isProcessingAuth, setIsProcessingAuth] = useState(true);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
   // Handle auth tokens from URL hash (email verification redirect)
   useEffect(() => {
@@ -16,25 +17,38 @@ export default function Index() {
         return;
       }
 
-      // Check if there's a hash with tokens
       const hash = window.location.hash;
+
+      // Check for error in hash first (expired link, etc)
+      if (hash && hash.includes('error=')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const errorDesc = params.get('error_description');
+        if (errorDesc) {
+          alert(decodeURIComponent(errorDesc.replace(/\+/g, ' ')));
+        }
+        window.history.replaceState(null, '', window.location.pathname);
+        setIsProcessingAuth(false);
+        return;
+      }
+
+      // Check if there's a hash with tokens
       if (hash && hash.includes('access_token')) {
+        // Clear the hash from URL immediately
+        window.history.replaceState(null, '', window.location.pathname);
+
         try {
-          // Parse the hash to get tokens
           const params = new URLSearchParams(hash.substring(1));
           const accessToken = params.get('access_token');
           const refreshToken = params.get('refresh_token');
-          const type = params.get('type'); // 'signup' or 'recovery' etc.
+          const type = params.get('type');
+
+          console.log('Processing auth tokens, type:', type);
 
           if (accessToken && refreshToken) {
-            // Explicitly set the session with the tokens from the hash
             const { data: { session }, error } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken,
             });
-
-            // Clear the hash from URL
-            window.history.replaceState(null, '', window.location.pathname);
 
             if (error) {
               console.error('Error setting session:', error);
@@ -42,19 +56,22 @@ export default function Index() {
               return;
             }
 
+            console.log('Session set successfully:', !!session?.user);
+
             if (session?.user) {
-              // For new signups, go straight to add-child
+              // For new signups, create parent and go to add-child
               if (type === 'signup') {
-                // Create parent record if needed
+                // Check if parent already exists (use maybeSingle to avoid error)
                 const { data: existingParent } = await supabase
                   .from('parents')
                   .select('*')
                   .eq('user_id', session.user.id)
-                  .single();
+                  .maybeSingle();
+
+                console.log('Existing parent:', !!existingParent);
 
                 if (!existingParent) {
-                  // Create new parent record
-                  const { data: newParent } = await supabase
+                  const { data: newParent, error: insertError } = await supabase
                     .from('parents')
                     .insert({
                       user_id: session.user.id,
@@ -63,23 +80,29 @@ export default function Index() {
                     .select()
                     .single();
 
-                  if (newParent) {
+                  if (insertError) {
+                    console.error('Error creating parent:', insertError);
+                  } else if (newParent) {
+                    console.log('Created new parent');
                     setParent(newParent);
                   }
                 } else {
                   setParent(existingParent);
                 }
 
-                router.replace('/(auth)/add-child');
+                // Set redirect and stop processing
+                console.log('Redirecting to add-child');
+                setRedirectTo('/(auth)/add-child');
+                setIsProcessingAuth(false);
                 return;
               }
 
-              // For other types (recovery, etc.), check if user has children
+              // For other types (recovery, login, etc.), check if user has children
               const { data: parentData } = await supabase
                 .from('parents')
                 .select('*')
                 .eq('user_id', session.user.id)
-                .single();
+                .maybeSingle();
 
               if (parentData) {
                 setParent(parentData);
@@ -91,33 +114,21 @@ export default function Index() {
                   .limit(1);
 
                 if (childrenData && childrenData.length > 0) {
-                  router.replace('/(app)/(tabs)/learn');
+                  setRedirectTo('/(tabs)/learn');
                 } else {
-                  router.replace('/(auth)/add-child');
+                  setRedirectTo('/(auth)/add-child');
                 }
-                return;
+              } else {
+                setRedirectTo('/(auth)/add-child');
               }
 
-              // No parent record, go to add-child
-              router.replace('/(auth)/add-child');
+              setIsProcessingAuth(false);
               return;
             }
           }
         } catch (err) {
           console.error('Error processing auth tokens:', err);
-          // Clear hash and continue to normal flow
-          window.history.replaceState(null, '', window.location.pathname);
         }
-      }
-
-      // Check for error in hash (expired link, etc)
-      if (hash && hash.includes('error=')) {
-        const params = new URLSearchParams(hash.substring(1));
-        const errorDesc = params.get('error_description');
-        if (errorDesc) {
-          alert(decodeURIComponent(errorDesc.replace(/\+/g, ' ')));
-        }
-        window.history.replaceState(null, '', window.location.pathname);
       }
 
       setIsProcessingAuth(false);
@@ -126,7 +137,13 @@ export default function Index() {
     handleHashTokens();
   }, []);
 
-  // Show loading state
+  // Handle redirect after auth processing - use Redirect component
+  // This takes priority over loading state
+  if (redirectTo) {
+    return <Redirect href={redirectTo as any} />;
+  }
+
+  // Show loading state while processing auth or initializing
   if (isLoading || isProcessingAuth) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
@@ -147,5 +164,5 @@ export default function Index() {
   }
 
   // Authenticated with children - go to main app
-  return <Redirect href="/(app)/(tabs)/learn" />;
+  return <Redirect href="/(tabs)/learn" />;
 }

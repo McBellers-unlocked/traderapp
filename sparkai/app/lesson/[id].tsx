@@ -53,7 +53,7 @@ export default function LessonScreen() {
     const handleLessonComplete = () => {
       console.log('Lesson complete, navigating...');
       // Use replace to go to learn tab since router.back() can be unreliable on web
-      router.replace('/(app)/(tabs)/learn');
+      router.replace('/(tabs)/learn');
     };
 
     return (

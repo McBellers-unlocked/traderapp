@@ -31,7 +31,7 @@ export default function AuthCallbackScreen() {
               .from('parents')
               .select('*')
               .eq('user_id', session.user.id)
-              .single();
+              .maybeSingle();
 
             if (parentData) {
               setParent(parentData);
@@ -45,7 +45,7 @@ export default function AuthCallbackScreen() {
 
               if (children && children.length > 0) {
                 // User already has children, go to main app
-                router.replace('/(app)/(tabs)/learn');
+                router.replace('/(tabs)/learn');
               } else {
                 // No children yet, go to add-child
                 router.replace('/(auth)/add-child');
