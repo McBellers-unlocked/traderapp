@@ -24,6 +24,7 @@ export default function Index() {
           const params = new URLSearchParams(hash.substring(1));
           const accessToken = params.get('access_token');
           const refreshToken = params.get('refresh_token');
+          const type = params.get('type'); // 'signup' or 'recovery' etc.
 
           if (accessToken && refreshToken) {
             // Explicitly set the session with the tokens from the hash
@@ -32,11 +33,48 @@ export default function Index() {
               refresh_token: refreshToken,
             });
 
-            if (session?.user && !error) {
-              // Clear the hash from URL first
-              window.history.replaceState(null, '', window.location.pathname);
+            // Clear the hash from URL
+            window.history.replaceState(null, '', window.location.pathname);
 
-              // Fetch or create parent record
+            if (error) {
+              console.error('Error setting session:', error);
+              setIsProcessingAuth(false);
+              return;
+            }
+
+            if (session?.user) {
+              // For new signups, go straight to add-child
+              if (type === 'signup') {
+                // Create parent record if needed
+                const { data: existingParent } = await supabase
+                  .from('parents')
+                  .select('*')
+                  .eq('user_id', session.user.id)
+                  .single();
+
+                if (!existingParent) {
+                  // Create new parent record
+                  const { data: newParent } = await supabase
+                    .from('parents')
+                    .insert({
+                      user_id: session.user.id,
+                      email: session.user.email,
+                    })
+                    .select()
+                    .single();
+
+                  if (newParent) {
+                    setParent(newParent);
+                  }
+                } else {
+                  setParent(existingParent);
+                }
+
+                router.replace('/(auth)/add-child');
+                return;
+              }
+
+              // For other types (recovery, etc.), check if user has children
               const { data: parentData } = await supabase
                 .from('parents')
                 .select('*')
@@ -45,26 +83,30 @@ export default function Index() {
 
               if (parentData) {
                 setParent(parentData);
+
+                const { data: childrenData } = await supabase
+                  .from('children')
+                  .select('id')
+                  .eq('parent_id', parentData.id)
+                  .limit(1);
+
+                if (childrenData && childrenData.length > 0) {
+                  router.replace('/(app)/(tabs)/learn');
+                } else {
+                  router.replace('/(auth)/add-child');
+                }
+                return;
               }
 
-              // Check if user has children
-              const { data: childrenData } = await supabase
-                .from('children')
-                .select('id')
-                .eq('parent_id', parentData?.id)
-                .limit(1);
-
-              // Redirect based on whether they have children
-              if (childrenData && childrenData.length > 0) {
-                router.replace('/(app)/(tabs)/learn');
-              } else {
-                router.replace('/(auth)/add-child');
-              }
+              // No parent record, go to add-child
+              router.replace('/(auth)/add-child');
               return;
             }
           }
         } catch (err) {
           console.error('Error processing auth tokens:', err);
+          // Clear hash and continue to normal flow
+          window.history.replaceState(null, '', window.location.pathname);
         }
       }
 
