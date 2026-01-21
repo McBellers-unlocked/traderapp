@@ -6,6 +6,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,10 +15,11 @@ import { supabase } from '@/lib/supabase';
 import { AVATAR_OPTIONS } from '@/types';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { Mascot } from '@/components/ui/Mascot';
 import { AvatarIcon, getAvatarType } from '@/components/ui/AvatarIcon';
 import { StepIndicator } from '@/components/ui/StepIndicator';
 import Svg, { Path, Circle } from 'react-native-svg';
+
+const SparkyImage = require('@/assets/images/sparky.png');
 
 export default function AddChildScreen() {
   const { parent, addChild, setParent } = useAuthStore();
@@ -197,7 +199,11 @@ export default function AddChildScreen() {
             </Text>
           </View>
           <View className="ml-4">
-            <Mascot size="sm" expression="excited" showGlow={false} />
+            <Image
+              source={SparkyImage}
+              style={{ width: 70, height: 70 }}
+              resizeMode="contain"
+            />
           </View>
         </View>
       </LinearGradient>

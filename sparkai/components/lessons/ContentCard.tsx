@@ -1,5 +1,6 @@
 import { View, Text, Image } from 'react-native';
-import { Mascot } from '@/components/ui/Mascot';
+
+const SparkyImage = require('@/assets/images/sparky.png');
 
 interface ContentCardProps {
   type: 'text' | 'text-image' | 'fact' | 'tip' | 'warning';
@@ -106,7 +107,11 @@ export function ContentCard({
     return (
       <View className="flex-row items-start">
         <View className="mr-4">
-          <Mascot size="md" expression={mascot.expression} showGlow={false} />
+          <Image
+            source={SparkyImage}
+            style={{ width: 80, height: 80 }}
+            resizeMode="contain"
+          />
         </View>
         <View className="flex-1">
           <View
@@ -227,7 +232,11 @@ export function ContentCard({
         }}
       >
         <View className="items-center mb-4">
-          <Mascot size="md" expression={mascot.expression} showGlow={false} />
+          <Image
+            source={SparkyImage}
+            style={{ width: 100, height: 100 }}
+            resizeMode="contain"
+          />
         </View>
         {title && (
           <Text className="text-xl font-bold text-slate-800 mb-3 text-center">

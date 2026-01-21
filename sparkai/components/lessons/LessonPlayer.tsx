@@ -1,8 +1,7 @@
 import { useState, useCallback } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput, ActivityIndicator, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Mascot } from '@/components/ui/Mascot';
 import { Button } from '@/components/ui/Button';
 import { SortingGame } from '@/components/lessons/SortingGame';
 import { MultipleChoiceQuiz } from '@/components/lessons/MultipleChoiceQuiz';
@@ -20,6 +19,8 @@ import {
   DiscussionScreenData,
 } from '@/constants/lessonContent';
 import Svg, { Path } from 'react-native-svg';
+
+const SparkyImage = require('@/assets/images/sparky.png');
 
 interface LessonPlayerProps {
   lesson: LessonContent;
@@ -204,7 +205,11 @@ function ContentScreen({
       {data.mascotMessage ? (
         <View className="mb-6">
           <View className="items-center mb-4">
-            <Mascot size="md" expression={getExpression()} />
+            <Image
+              source={SparkyImage}
+              style={{ width: 100, height: 100 }}
+              resizeMode="contain"
+            />
           </View>
           <View className="bg-white rounded-2xl p-4 shadow-sm">
             <Text className="text-slate-700 text-base leading-relaxed">
@@ -353,7 +358,11 @@ function QuizScreen({
     return (
       <View className="flex-1 p-6">
         <View className="items-center mb-6">
-          <Mascot size="md" expression="happy" />
+          <Image
+            source={SparkyImage}
+            style={{ width: 100, height: 100 }}
+            resizeMode="contain"
+          />
         </View>
         <View className="bg-white rounded-2xl p-6 shadow-sm items-center">
           <Text className="text-2xl mb-2">🎉</Text>
@@ -618,7 +627,11 @@ function ReflectionScreen({
       <Text className="text-xl font-bold text-slate-800 mb-2">{data.title}</Text>
       {data.mascotMessage && (
         <View className="items-center mb-4">
-          <Mascot size="sm" expression="thinking" />
+          <Image
+            source={SparkyImage}
+            style={{ width: 70, height: 70 }}
+            resizeMode="contain"
+          />
           <Text className="text-slate-600 text-center mt-2">{data.mascotMessage}</Text>
         </View>
       )}
@@ -652,7 +665,11 @@ function CelebrationScreen({
     <View className="flex-1 p-6 items-center">
       <View className="items-center mb-6">
         <Text className="text-5xl mb-4">🎉</Text>
-        <Mascot size="lg" expression="excited" />
+        <Image
+          source={SparkyImage}
+          style={{ width: 140, height: 140 }}
+          resizeMode="contain"
+        />
       </View>
 
       <Text className="text-2xl font-bold text-slate-800 text-center mb-2">
