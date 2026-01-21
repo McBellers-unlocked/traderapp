@@ -82,8 +82,8 @@ export default function SignupScreen() {
         // Track successful signup
         trackSignUp('email');
 
-        // Navigate to add child
-        router.replace('/(auth)/add-child');
+        // Navigate to verify email screen (user must confirm before adding child)
+        router.replace('/(auth)/verify-email');
       }
     } catch (err) {
       Alert.alert('Oops!', 'Something went wrong. Please try again.');
