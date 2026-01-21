@@ -7,6 +7,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Image,
 } from 'react-native';
 import { Link, router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,9 +16,10 @@ import { useAuthStore } from '@/lib/stores';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { SocialAuthButton } from '@/components/ui/SocialAuthButton';
-import { Mascot } from '@/components/ui/Mascot';
 import { StepIndicator } from '@/components/ui/StepIndicator';
 import Svg, { Path, Circle } from 'react-native-svg';
+
+const SparkyImage = require('@/assets/images/sparky.png');
 
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
@@ -163,7 +165,11 @@ export default function SignupScreen() {
               </Text>
             </View>
             <View className="ml-4">
-              <Mascot size="sm" expression="excited" showGlow={false} />
+              <Image
+                source={SparkyImage}
+                style={{ width: 70, height: 70 }}
+                resizeMode="contain"
+              />
             </View>
           </View>
         </LinearGradient>
