@@ -1,13 +1,81 @@
-import { useEffect } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
-import { Redirect } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { View, Text, ActivityIndicator, Platform } from 'react-native';
+import { Redirect, router } from 'expo-router';
 import { useAuthStore } from '@/lib/stores';
+import { supabase } from '@/lib/supabase';
 
 export default function Index() {
-  const { isAuthenticated, isLoading, children, activeChild } = useAuthStore();
+  const { isAuthenticated, isLoading, children, activeChild, setParent } = useAuthStore();
+  const [isProcessingAuth, setIsProcessingAuth] = useState(true);
+
+  // Handle auth tokens from URL hash (email verification redirect)
+  useEffect(() => {
+    const handleHashTokens = async () => {
+      if (Platform.OS !== 'web') {
+        setIsProcessingAuth(false);
+        return;
+      }
+
+      // Check if there's a hash with tokens
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token')) {
+        try {
+          // Supabase should automatically pick up tokens from hash
+          const { data: { session }, error } = await supabase.auth.getSession();
+
+          if (session?.user && !error) {
+            // Fetch or create parent record
+            const { data: parentData } = await supabase
+              .from('parents')
+              .select('*')
+              .eq('user_id', session.user.id)
+              .single();
+
+            if (parentData) {
+              setParent(parentData);
+            }
+
+            // Check if user has children
+            const { data: childrenData } = await supabase
+              .from('children')
+              .select('id')
+              .eq('parent_id', parentData?.id)
+              .limit(1);
+
+            // Clear the hash from URL
+            window.history.replaceState(null, '', window.location.pathname);
+
+            // Redirect based on whether they have children
+            if (childrenData && childrenData.length > 0) {
+              router.replace('/(app)/(tabs)/learn');
+            } else {
+              router.replace('/(auth)/add-child');
+            }
+            return;
+          }
+        } catch (err) {
+          console.error('Error processing auth tokens:', err);
+        }
+      }
+
+      // Check for error in hash (expired link, etc)
+      if (hash && hash.includes('error=')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const error = params.get('error_description');
+        if (error) {
+          alert(decodeURIComponent(error.replace(/\+/g, ' ')));
+        }
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+
+      setIsProcessingAuth(false);
+    };
+
+    handleHashTokens();
+  }, []);
 
   // Show loading state
-  if (isLoading) {
+  if (isLoading || isProcessingAuth) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#6366F1" />
@@ -27,5 +95,5 @@ export default function Index() {
   }
 
   // Authenticated with children - go to main app
-  return <Redirect href="/(tabs)/learn" />;
+  return <Redirect href="/(app)/(tabs)/learn" />;
 }
