@@ -1,12 +1,14 @@
-import { View, Text, Pressable, Dimensions, ScrollView } from 'react-native';
+import { View, Text, Pressable, Dimensions, ScrollView, Image } from 'react-native';
 import { Link } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState, useRef, useEffect } from 'react';
-import { Mascot } from '@/components/ui/Mascot';
 import { Button } from '@/components/ui/Button';
 import Svg, { Path, Circle } from 'react-native-svg';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// Sparky image
+const SparkyImage = require('@/assets/images/sparky.png');
 
 const onboardingSlides = [
   {
@@ -70,7 +72,7 @@ export default function WelcomeScreen() {
               colors={[...slide.backgroundColor]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="flex-1 pt-16 pb-8 px-6"
+              className="flex-1 pt-12 pb-6 px-6"
             >
               {/* Decorative circles */}
               <View className="absolute top-10 right-10 w-24 h-24 rounded-full bg-white/10" />
@@ -78,17 +80,21 @@ export default function WelcomeScreen() {
               <View className="absolute bottom-20 right-20 w-20 h-20 rounded-full bg-white/10" />
 
               {/* Content */}
-              <View className="flex-1 items-center justify-center">
-                <Mascot size="xl" expression={slide.mascotExpression} showGlow />
+              <View className="flex-1 items-center justify-center px-4">
+                <Image
+                  source={SparkyImage}
+                  style={{ width: 180, height: 180 }}
+                  resizeMode="contain"
+                />
 
-                <View className="mt-8 px-4">
-                  <Text className="text-3xl font-bold text-white text-center mb-1">
+                <View className="mt-6">
+                  <Text className="text-3xl font-bold text-white text-center mb-2">
                     {slide.title}
                   </Text>
                   <Text className="text-white/70 text-center text-base mb-3 font-medium">
                     {slide.subtitle}
                   </Text>
-                  <Text className="text-white/90 text-center text-base leading-relaxed">
+                  <Text className="text-white/90 text-center text-base leading-relaxed px-2">
                     {slide.description}
                   </Text>
                 </View>
