@@ -47,14 +47,11 @@ export default function Root({ children }: PropsWithChildren) {
             `,
           }}
         />
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: 'none' }}
-            src="https://www.facebook.com/tr?id=1201348941656566&ev=PageView&noscript=1"
-          />
-        </noscript>
+        <noscript
+          dangerouslySetInnerHTML={{
+            __html: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1201348941656566&ev=PageView&noscript=1" />`,
+          }}
+        />
         {/* End Meta Pixel Code */}
 
         {/* Disable body scrolling on web to make native scrolling work */}
