@@ -20,38 +20,48 @@ export default function Index() {
       const hash = window.location.hash;
       if (hash && hash.includes('access_token')) {
         try {
-          // Supabase should automatically pick up tokens from hash
-          const { data: { session }, error } = await supabase.auth.getSession();
+          // Parse the hash to get tokens
+          const params = new URLSearchParams(hash.substring(1));
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
 
-          if (session?.user && !error) {
-            // Fetch or create parent record
-            const { data: parentData } = await supabase
-              .from('parents')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .single();
+          if (accessToken && refreshToken) {
+            // Explicitly set the session with the tokens from the hash
+            const { data: { session }, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
 
-            if (parentData) {
-              setParent(parentData);
+            if (session?.user && !error) {
+              // Clear the hash from URL first
+              window.history.replaceState(null, '', window.location.pathname);
+
+              // Fetch or create parent record
+              const { data: parentData } = await supabase
+                .from('parents')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .single();
+
+              if (parentData) {
+                setParent(parentData);
+              }
+
+              // Check if user has children
+              const { data: childrenData } = await supabase
+                .from('children')
+                .select('id')
+                .eq('parent_id', parentData?.id)
+                .limit(1);
+
+              // Redirect based on whether they have children
+              if (childrenData && childrenData.length > 0) {
+                router.replace('/(app)/(tabs)/learn');
+              } else {
+                router.replace('/(auth)/add-child');
+              }
+              return;
             }
-
-            // Check if user has children
-            const { data: childrenData } = await supabase
-              .from('children')
-              .select('id')
-              .eq('parent_id', parentData?.id)
-              .limit(1);
-
-            // Clear the hash from URL
-            window.history.replaceState(null, '', window.location.pathname);
-
-            // Redirect based on whether they have children
-            if (childrenData && childrenData.length > 0) {
-              router.replace('/(app)/(tabs)/learn');
-            } else {
-              router.replace('/(auth)/add-child');
-            }
-            return;
           }
         } catch (err) {
           console.error('Error processing auth tokens:', err);
@@ -61,9 +71,9 @@ export default function Index() {
       // Check for error in hash (expired link, etc)
       if (hash && hash.includes('error=')) {
         const params = new URLSearchParams(hash.substring(1));
-        const error = params.get('error_description');
-        if (error) {
-          alert(decodeURIComponent(error.replace(/\+/g, ' ')));
+        const errorDesc = params.get('error_description');
+        if (errorDesc) {
+          alert(decodeURIComponent(errorDesc.replace(/\+/g, ' ')));
         }
         window.history.replaceState(null, '', window.location.pathname);
       }
