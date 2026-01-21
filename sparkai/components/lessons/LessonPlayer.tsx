@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, ActivityIndicator, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -7,6 +7,7 @@ import { SortingGame } from '@/components/lessons/SortingGame';
 import { MultipleChoiceQuiz } from '@/components/lessons/MultipleChoiceQuiz';
 import { ContentCard } from '@/components/lessons/ContentCard';
 import { useProgressStore } from '@/lib/stores';
+import { trackStartTrial, trackLessonComplete } from '@/lib/tracking';
 import {
   LessonContent,
   LessonScreen,
@@ -38,11 +39,17 @@ export function LessonPlayer({ lesson, onComplete }: LessonPlayerProps) {
   const isLastScreen = currentScreenIndex === lesson.screens.length - 1;
   const progress = ((currentScreenIndex + 1) / lesson.screens.length) * 100;
 
+  // Track lesson start on mount
+  useEffect(() => {
+    trackStartTrial(lesson.id);
+  }, [lesson.id]);
+
   const handleNext = useCallback(() => {
     if (isLastScreen) {
       // Complete the lesson
       completeLesson(lesson.id);
       addXp(lesson.xpReward);
+      trackLessonComplete(lesson.id, lesson.xpReward);
       onComplete();
     } else {
       setCurrentScreenIndex(prev => prev + 1);

@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { AvatarIcon, getAvatarType } from '@/components/ui/AvatarIcon';
 import { StepIndicator } from '@/components/ui/StepIndicator';
+import { trackAddChild } from '@/lib/tracking';
 import Svg, { Path, Circle } from 'react-native-svg';
 
 const SparkyImage = require('@/assets/images/sparky.png');
@@ -140,6 +141,9 @@ export default function AddChildScreen() {
         setChildren([mockChild]);
         setActiveChild(mockChild);
       }
+
+      // Track child profile added
+      trackAddChild();
 
       // Navigate to learn tab
       router.replace('/(tabs)/learn');

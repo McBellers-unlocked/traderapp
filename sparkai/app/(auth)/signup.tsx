@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { SocialAuthButton } from '@/components/ui/SocialAuthButton';
 import { StepIndicator } from '@/components/ui/StepIndicator';
+import { trackSignUp } from '@/lib/tracking';
 import Svg, { Path, Circle } from 'react-native-svg';
 
 const SparkyImage = require('@/assets/images/sparky.png');
@@ -77,6 +78,9 @@ export default function SignupScreen() {
           // Update the auth store with the new parent
           useAuthStore.getState().setParent(parentData);
         }
+
+        // Track successful signup
+        trackSignUp('email');
 
         // Navigate to add child
         router.replace('/(auth)/add-child');
