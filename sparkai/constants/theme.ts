@@ -2,22 +2,33 @@
 // These mirror the Tailwind config for use in JavaScript
 
 export const colors = {
-  primary: '#6366F1',
-  secondary: '#EC4899',
-  success: '#10B981',
-  warning: '#F59E0B',
-  error: '#EF4444',
+  // Primary brand colors (updated to match new logo)
+  primary: '#7C3AED',        // Vibrant purple
+  primaryLight: '#8B5CF6',   // Lighter purple
+  primaryDark: '#5B21B6',    // Darker purple
+
+  // Accent colors
+  accent: '#F59E0B',         // Gold/amber for highlights
+  accentLight: '#FCD34D',    // Lighter gold
+
+  // Secondary colors
+  secondary: '#EC4899',      // Pink
+  success: '#10B981',        // Green
+  warning: '#F59E0B',        // Amber
+  error: '#EF4444',          // Red
+
+  // Neutrals
   background: '#F8FAFC',
   surface: '#FFFFFF',
   text: '#1E293B',
   textLight: '#64748B',
 
   // Module-specific colors
-  module1: '#3B82F6', // Blue - AI All Around Us
-  module2: '#8B5CF6', // Purple - How AI Learns
-  module3: '#EC4899', // Pink - Talking to AI
-  module4: '#F59E0B', // Amber - AI Makes Mistakes
-  module5: '#10B981', // Green - Using AI Responsibly
+  module1: '#7C3AED', // Purple - AI Fundamentals (matches brand)
+  module2: '#8B5CF6', // Violet - AI in Daily Life
+  module3: '#EC4899', // Pink - How AI Thinks
+  module4: '#F59E0B', // Amber - AI & Creativity
+  module5: '#10B981', // Green - AI Ethics & Safety
 } as const;
 
 export const spacing = {

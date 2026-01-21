@@ -3,19 +3,27 @@ import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getLessonById } from '@/constants/curriculum';
+import { getLessonContent } from '@/constants/lessonContent';
 import { moduleThemes } from '@/constants/theme';
 import { useAuthStore, useProgressStore } from '@/lib/stores';
+import { LessonPlayer } from '@/components/lessons/LessonPlayer';
 
 export default function LessonScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id: string }>();
+  const id = typeof params.id === 'string' ? params.id : params.id?.[0];
+
   const { activeChild } = useAuthStore();
-  const { updateLessonProgress, completeLesson } = useProgressStore();
+  const { updateLessonProgress, completeLessonWithDetails } = useProgressStore();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [startTime] = useState(Date.now());
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
 
-  const lessonData = getLessonById(id);
+  const lessonData = getLessonById(id || '');
+  const detailedContent = id ? getLessonContent(id) : undefined;
+
+  // Debug log
+  console.log('Lesson ID:', id, 'Has detailed content:', !!detailedContent);
 
   useEffect(() => {
     // Mark lesson as in progress when starting
@@ -40,6 +48,23 @@ export default function LessonScreen() {
     );
   }
 
+  // If we have detailed lesson content, use the new LessonPlayer
+  if (detailedContent) {
+    const handleLessonComplete = () => {
+      console.log('Lesson complete, navigating...');
+      // Use replace to go to learn tab since router.back() can be unreliable on web
+      router.replace('/(app)/(tabs)/learn');
+    };
+
+    return (
+      <LessonPlayer
+        lesson={detailedContent}
+        onComplete={handleLessonComplete}
+      />
+    );
+  }
+
+  // Fallback to the basic rendering for lessons without detailed content
   const { module, lesson } = lessonData;
   const moduleIndex = parseInt(module.id.split('-')[1]) as 1 | 2 | 3 | 4 | 5;
   const theme = moduleThemes[moduleIndex.toString() as keyof typeof moduleThemes];
@@ -64,7 +89,11 @@ export default function LessonScreen() {
   };
 
   const handleComplete = async () => {
-    if (!activeChild) return;
+    if (!activeChild) {
+      // Demo mode - just go back
+      router.back();
+      return;
+    }
 
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
 
@@ -79,7 +108,7 @@ export default function LessonScreen() {
       score = Math.round((correctAnswers / quiz.questions.length) * 100);
     }
 
-    await completeLesson(activeChild.id, lesson.id, module.id, score, timeSpent);
+    await completeLessonWithDetails(activeChild.id, lesson.id, module.id, score, timeSpent);
 
     Alert.alert(
       'Great job! 🎉',
