@@ -4,6 +4,15 @@ import { Redirect, router } from 'expo-router';
 import { useAuthStore } from '@/lib/stores';
 import { supabase } from '@/lib/supabase';
 
+// Hard redirect for web - more reliable than router.replace on initial load
+const webRedirect = (path: string) => {
+  if (Platform.OS === 'web') {
+    window.location.href = path;
+  } else {
+    router.replace(path as any);
+  }
+};
+
 export default function Index() {
   const { isAuthenticated, isLoading, children, setParent } = useAuthStore();
   const [isProcessingAuth, setIsProcessingAuth] = useState(true);
@@ -51,7 +60,7 @@ export default function Index() {
 
             if (error) {
               console.error('Error setting session:', error);
-              router.replace('/(auth)/add-child');
+              webRedirect('/add-child');
               return;
             }
 
@@ -95,7 +104,7 @@ export default function Index() {
 
                 // Always redirect to add-child for signup
                 console.log('Redirecting to add-child');
-                router.replace('/(auth)/add-child');
+                webRedirect('/add-child');
                 return;
               }
 
@@ -117,27 +126,27 @@ export default function Index() {
                     .limit(1);
 
                   if (childrenData && childrenData.length > 0) {
-                    router.replace('/(tabs)/learn');
+                    webRedirect('/learn');
                   } else {
-                    router.replace('/(auth)/add-child');
+                    webRedirect('/add-child');
                   }
                 } else {
-                  router.replace('/(auth)/add-child');
+                  webRedirect('/add-child');
                 }
               } catch (dbErr) {
                 console.error('Database error:', dbErr);
-                router.replace('/(auth)/add-child');
+                webRedirect('/add-child');
               }
               return;
             }
           }
 
           // Tokens present but no session - redirect to add-child anyway
-          router.replace('/(auth)/add-child');
+          webRedirect('/add-child');
           return;
         } catch (err) {
           console.error('Error processing auth tokens:', err);
-          router.replace('/(auth)/add-child');
+          webRedirect('/add-child');
           return;
         }
       }
