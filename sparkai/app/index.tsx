@@ -7,7 +7,6 @@ import { supabase } from '@/lib/supabase';
 export default function Index() {
   const { isAuthenticated, isLoading, children, setParent } = useAuthStore();
   const [isProcessingAuth, setIsProcessingAuth] = useState(true);
-  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
   // Handle auth tokens from URL hash (email verification redirect)
   useEffect(() => {
@@ -52,9 +51,7 @@ export default function Index() {
 
             if (error) {
               console.error('Error setting session:', error);
-              // Still try to redirect to add-child on error
-              setRedirectTo('/(auth)/add-child');
-              setIsProcessingAuth(false);
+              router.replace('/(auth)/add-child');
               return;
             }
 
@@ -96,10 +93,9 @@ export default function Index() {
                   console.error('Database error during signup:', dbErr);
                 }
 
-                // Always redirect to add-child for signup, regardless of db errors
+                // Always redirect to add-child for signup
                 console.log('Redirecting to add-child');
-                setRedirectTo('/(auth)/add-child');
-                setIsProcessingAuth(false);
+                router.replace('/(auth)/add-child');
                 return;
               }
 
@@ -121,29 +117,28 @@ export default function Index() {
                     .limit(1);
 
                   if (childrenData && childrenData.length > 0) {
-                    setRedirectTo('/(tabs)/learn');
+                    router.replace('/(tabs)/learn');
                   } else {
-                    setRedirectTo('/(auth)/add-child');
+                    router.replace('/(auth)/add-child');
                   }
                 } else {
-                  setRedirectTo('/(auth)/add-child');
+                  router.replace('/(auth)/add-child');
                 }
               } catch (dbErr) {
                 console.error('Database error:', dbErr);
-                setRedirectTo('/(auth)/add-child');
+                router.replace('/(auth)/add-child');
               }
-
-              setIsProcessingAuth(false);
               return;
             }
           }
 
           // Tokens present but no session - redirect to add-child anyway
-          setRedirectTo('/(auth)/add-child');
+          router.replace('/(auth)/add-child');
+          return;
         } catch (err) {
           console.error('Error processing auth tokens:', err);
-          // On any error, redirect to add-child to avoid stuck loading
-          setRedirectTo('/(auth)/add-child');
+          router.replace('/(auth)/add-child');
+          return;
         }
       }
 
@@ -152,12 +147,6 @@ export default function Index() {
 
     handleHashTokens();
   }, []);
-
-  // Handle redirect after auth processing - use Redirect component
-  // This takes priority over loading state
-  if (redirectTo) {
-    return <Redirect href={redirectTo as any} />;
-  }
 
   // Show loading state while processing auth or initializing
   if (isLoading || isProcessingAuth) {
