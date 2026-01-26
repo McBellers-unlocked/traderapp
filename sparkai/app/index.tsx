@@ -3,19 +3,13 @@ import { View, Text, ActivityIndicator, Platform } from 'react-native';
 import { Redirect, router } from 'expo-router';
 import { useAuthStore } from '@/lib/stores';
 import { supabase } from '@/lib/supabase';
-
-// Hard redirect for web - more reliable than router.replace on initial load
-const webRedirect = (path: string) => {
-  if (Platform.OS === 'web') {
-    window.location.href = path;
-  } else {
-    router.replace(path as any);
-  }
-};
+import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Path } from 'react-native-svg';
 
 export default function Index() {
   const { isAuthenticated, isLoading, children, setParent } = useAuthStore();
   const [isProcessingAuth, setIsProcessingAuth] = useState(true);
+  const [emailVerified, setEmailVerified] = useState(false);
 
   // Handle auth tokens from URL hash (email verification redirect)
   useEffect(() => {
@@ -60,94 +54,51 @@ export default function Index() {
 
             if (error) {
               console.error('Error setting session:', error);
-              webRedirect('/add-child');
+              setIsProcessingAuth(false);
               return;
             }
 
             console.log('Session set successfully:', !!session?.user);
 
             if (session?.user) {
-              // For new signups, create parent and go to add-child
-              if (type === 'signup') {
-                // Check if parent already exists (use maybeSingle to avoid error)
-                try {
-                  const { data: existingParent } = await supabase
-                    .from('parents')
-                    .select('*')
-                    .eq('user_id', session.user.id)
-                    .maybeSingle();
-
-                  console.log('Existing parent:', !!existingParent);
-
-                  if (!existingParent) {
-                    const { data: newParent, error: insertError } = await supabase
-                      .from('parents')
-                      .insert({
-                        user_id: session.user.id,
-                        email: session.user.email,
-                      })
-                      .select()
-                      .single();
-
-                    if (insertError) {
-                      console.error('Error creating parent:', insertError);
-                    } else if (newParent) {
-                      console.log('Created new parent');
-                      setParent(newParent);
-                    }
-                  } else {
-                    setParent(existingParent);
-                  }
-                } catch (dbErr) {
-                  console.error('Database error during signup:', dbErr);
-                }
-
-                // Always redirect to add-child for signup
-                console.log('Redirecting to add-child');
-                webRedirect('/add-child');
-                return;
-              }
-
-              // For other types (recovery, login, etc.), check if user has children
+              // Create parent record if needed
               try {
-                const { data: parentData } = await supabase
+                const { data: existingParent } = await supabase
                   .from('parents')
                   .select('*')
                   .eq('user_id', session.user.id)
                   .maybeSingle();
 
-                if (parentData) {
-                  setParent(parentData);
+                if (!existingParent) {
+                  const { data: newParent } = await supabase
+                    .from('parents')
+                    .insert({
+                      user_id: session.user.id,
+                      email: session.user.email,
+                    })
+                    .select()
+                    .single();
 
-                  const { data: childrenData } = await supabase
-                    .from('children')
-                    .select('id')
-                    .eq('parent_id', parentData.id)
-                    .limit(1);
-
-                  if (childrenData && childrenData.length > 0) {
-                    webRedirect('/learn');
-                  } else {
-                    webRedirect('/add-child');
+                  if (newParent) {
+                    setParent(newParent);
                   }
                 } else {
-                  webRedirect('/add-child');
+                  setParent(existingParent);
                 }
               } catch (dbErr) {
                 console.error('Database error:', dbErr);
-                webRedirect('/add-child');
               }
-              return;
+
+              // Show success page for email verification
+              if (type === 'signup') {
+                setEmailVerified(true);
+                setIsProcessingAuth(false);
+                return;
+              }
             }
           }
-
-          // Tokens present but no session - redirect to add-child anyway
-          webRedirect('/add-child');
-          return;
         } catch (err) {
           console.error('Error processing auth tokens:', err);
-          webRedirect('/add-child');
-          return;
         }
       }
 
@@ -156,6 +107,64 @@ export default function Index() {
 
     handleHashTokens();
   }, []);
+
+  // Show email verified success page
+  if (emailVerified) {
+    return (
+      <View className="flex-1 bg-slate-50">
+        <LinearGradient
+          colors={['#10B981', '#059669']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className="pt-16 pb-12 px-6"
+        >
+          <View className="items-center">
+            {/* Checkmark icon */}
+            <View className="w-20 h-20 bg-white/20 rounded-full items-center justify-center mb-4">
+              <Svg width={40} height={40} viewBox="0 0 24 24" fill="none">
+                <Path
+                  d="M20 6L9 17l-5-5"
+                  stroke="white"
+                  strokeWidth={3}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </Svg>
+            </View>
+            <Text className="text-3xl font-bold text-white text-center mb-2">
+              Email Verified!
+            </Text>
+            <Text className="text-white/90 text-lg text-center">
+              Your account has been confirmed
+            </Text>
+          </View>
+        </LinearGradient>
+
+        <View className="flex-1 px-6 pt-8 items-center">
+          <View className="bg-white rounded-2xl p-6 shadow-sm w-full max-w-md">
+            <Text className="text-xl font-bold text-slate-800 text-center mb-4">
+              You can close this tab
+            </Text>
+            <Text className="text-slate-600 text-center text-base leading-relaxed">
+              Go back to your original browser tab where you signed up to continue setting up your child's profile.
+            </Text>
+          </View>
+
+          <View className="mt-6 bg-indigo-50 rounded-2xl p-4 w-full max-w-md">
+            <Text className="text-indigo-800 text-center text-sm">
+              If you closed the original tab, you can{' '}
+              <Text
+                className="font-semibold underline"
+                onPress={() => window.location.href = '/add-child'}
+              >
+                continue here
+              </Text>
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   // Show loading state while processing auth or initializing
   if (isLoading || isProcessingAuth) {
