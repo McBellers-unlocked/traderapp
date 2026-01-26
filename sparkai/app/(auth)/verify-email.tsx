@@ -67,15 +67,20 @@ export default function VerifyEmailScreen() {
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: email,
+        options: {
+          emailRedirectTo: 'sparkai://auth/callback',
+        },
       });
 
       if (error) {
         alert('Failed to resend email. Please try again.');
+        console.error('Resend error:', error);
       } else {
         alert('Verification email sent! Please check your inbox.');
       }
     } catch (error) {
       alert('Failed to resend email. Please try again.');
+      console.error('Resend exception:', error);
     }
   };
 

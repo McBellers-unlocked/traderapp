@@ -27,6 +27,9 @@ export const signUp = async (email: string, password: string) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: 'sparkai://auth/callback',
+    },
   });
   return { data, error };
 };
