@@ -52,6 +52,8 @@ export default function Index() {
 
             if (error) {
               console.error('Error setting session:', error);
+              // Still try to redirect to add-child on error
+              setRedirectTo('/(auth)/add-child');
               setIsProcessingAuth(false);
               return;
             }
@@ -62,35 +64,39 @@ export default function Index() {
               // For new signups, create parent and go to add-child
               if (type === 'signup') {
                 // Check if parent already exists (use maybeSingle to avoid error)
-                const { data: existingParent } = await supabase
-                  .from('parents')
-                  .select('*')
-                  .eq('user_id', session.user.id)
-                  .maybeSingle();
-
-                console.log('Existing parent:', !!existingParent);
-
-                if (!existingParent) {
-                  const { data: newParent, error: insertError } = await supabase
+                try {
+                  const { data: existingParent } = await supabase
                     .from('parents')
-                    .insert({
-                      user_id: session.user.id,
-                      email: session.user.email,
-                    })
-                    .select()
-                    .single();
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .maybeSingle();
 
-                  if (insertError) {
-                    console.error('Error creating parent:', insertError);
-                  } else if (newParent) {
-                    console.log('Created new parent');
-                    setParent(newParent);
+                  console.log('Existing parent:', !!existingParent);
+
+                  if (!existingParent) {
+                    const { data: newParent, error: insertError } = await supabase
+                      .from('parents')
+                      .insert({
+                        user_id: session.user.id,
+                        email: session.user.email,
+                      })
+                      .select()
+                      .single();
+
+                    if (insertError) {
+                      console.error('Error creating parent:', insertError);
+                    } else if (newParent) {
+                      console.log('Created new parent');
+                      setParent(newParent);
+                    }
+                  } else {
+                    setParent(existingParent);
                   }
-                } else {
-                  setParent(existingParent);
+                } catch (dbErr) {
+                  console.error('Database error during signup:', dbErr);
                 }
 
-                // Set redirect and stop processing
+                // Always redirect to add-child for signup, regardless of db errors
                 console.log('Redirecting to add-child');
                 setRedirectTo('/(auth)/add-child');
                 setIsProcessingAuth(false);
@@ -98,27 +104,32 @@ export default function Index() {
               }
 
               // For other types (recovery, login, etc.), check if user has children
-              const { data: parentData } = await supabase
-                .from('parents')
-                .select('*')
-                .eq('user_id', session.user.id)
-                .maybeSingle();
+              try {
+                const { data: parentData } = await supabase
+                  .from('parents')
+                  .select('*')
+                  .eq('user_id', session.user.id)
+                  .maybeSingle();
 
-              if (parentData) {
-                setParent(parentData);
+                if (parentData) {
+                  setParent(parentData);
 
-                const { data: childrenData } = await supabase
-                  .from('children')
-                  .select('id')
-                  .eq('parent_id', parentData.id)
-                  .limit(1);
+                  const { data: childrenData } = await supabase
+                    .from('children')
+                    .select('id')
+                    .eq('parent_id', parentData.id)
+                    .limit(1);
 
-                if (childrenData && childrenData.length > 0) {
-                  setRedirectTo('/(tabs)/learn');
+                  if (childrenData && childrenData.length > 0) {
+                    setRedirectTo('/(tabs)/learn');
+                  } else {
+                    setRedirectTo('/(auth)/add-child');
+                  }
                 } else {
                   setRedirectTo('/(auth)/add-child');
                 }
-              } else {
+              } catch (dbErr) {
+                console.error('Database error:', dbErr);
                 setRedirectTo('/(auth)/add-child');
               }
 
@@ -126,8 +137,13 @@ export default function Index() {
               return;
             }
           }
+
+          // Tokens present but no session - redirect to add-child anyway
+          setRedirectTo('/(auth)/add-child');
         } catch (err) {
           console.error('Error processing auth tokens:', err);
+          // On any error, redirect to add-child to avoid stuck loading
+          setRedirectTo('/(auth)/add-child');
         }
       }
 
