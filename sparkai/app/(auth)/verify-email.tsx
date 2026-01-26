@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Pressable, Image } from 'react-native';
+import { View, Text, Pressable, Image, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import Svg, { Path } from 'react-native-svg';
+
+const getAuthRedirectUrl = () => {
+  if (Platform.OS === 'web') {
+    return 'https://www.spark-kids.ai';
+  }
+  return 'sparkai://auth/callback';
+};
 
 const SparkyImage = require('@/assets/images/sparky.png');
 
@@ -67,15 +74,20 @@ export default function VerifyEmailScreen() {
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: email,
+        options: {
+          emailRedirectTo: getAuthRedirectUrl(),
+        },
       });
 
       if (error) {
         alert('Failed to resend email. Please try again.');
+        console.error('Resend error:', error);
       } else {
         alert('Verification email sent! Please check your inbox.');
       }
     } catch (error) {
       alert('Failed to resend email. Please try again.');
+      console.error('Resend exception:', error);
     }
   };
 

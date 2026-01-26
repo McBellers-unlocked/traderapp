@@ -35,20 +35,38 @@ export default function AddChildScreen() {
   // Fetch parent data if not available (fallback)
   useEffect(() => {
     const fetchParentIfNeeded = async () => {
-      if (parent) return;
+      if (parent) {
+        setIsFetchingParent(false);
+        return;
+      }
 
       setIsFetchingParent(true);
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
+          // Use maybeSingle to avoid error when no row exists
           const { data: parentData } = await supabase
             .from('parents')
             .select('*')
             .eq('user_id', user.id)
-            .single();
+            .maybeSingle();
 
           if (parentData) {
             setParent(parentData);
+          } else {
+            // Create parent record if it doesn't exist
+            console.log('Creating parent record for user:', user.id);
+            const { data: newParent, error } = await supabase
+              .from('parents')
+              .insert({ user_id: user.id, email: user.email })
+              .select()
+              .single();
+
+            if (newParent) {
+              setParent(newParent);
+            } else if (error) {
+              console.error('Failed to create parent:', error);
+            }
           }
         }
       } catch (error) {
@@ -97,7 +115,7 @@ export default function AddChildScreen() {
             .from('parents')
             .select('*')
             .eq('user_id', user.id)
-            .single();
+            .maybeSingle();
 
           if (existingParent) {
             currentParent = existingParent;

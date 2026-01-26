@@ -5,8 +5,9 @@ import { useAuthStore } from '@/lib/stores';
 import { supabase } from '@/lib/supabase';
 
 export default function Index() {
-  const { isAuthenticated, isLoading, children, activeChild, setParent } = useAuthStore();
+  const { isAuthenticated, isLoading, children, setParent } = useAuthStore();
   const [isProcessingAuth, setIsProcessingAuth] = useState(true);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
   // Handle auth tokens from URL hash (email verification redirect)
   useEffect(() => {
@@ -16,101 +17,9 @@ export default function Index() {
         return;
       }
 
-      // Check if there's a hash with tokens
       const hash = window.location.hash;
-      if (hash && hash.includes('access_token')) {
-        try {
-          // Parse the hash to get tokens
-          const params = new URLSearchParams(hash.substring(1));
-          const accessToken = params.get('access_token');
-          const refreshToken = params.get('refresh_token');
-          const type = params.get('type'); // 'signup' or 'recovery' etc.
 
-          if (accessToken && refreshToken) {
-            // Explicitly set the session with the tokens from the hash
-            const { data: { session }, error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
-
-            // Clear the hash from URL
-            window.history.replaceState(null, '', window.location.pathname);
-
-            if (error) {
-              console.error('Error setting session:', error);
-              setIsProcessingAuth(false);
-              return;
-            }
-
-            if (session?.user) {
-              // For new signups, go straight to add-child
-              if (type === 'signup') {
-                // Create parent record if needed
-                const { data: existingParent } = await supabase
-                  .from('parents')
-                  .select('*')
-                  .eq('user_id', session.user.id)
-                  .single();
-
-                if (!existingParent) {
-                  // Create new parent record
-                  const { data: newParent } = await supabase
-                    .from('parents')
-                    .insert({
-                      user_id: session.user.id,
-                      email: session.user.email,
-                    })
-                    .select()
-                    .single();
-
-                  if (newParent) {
-                    setParent(newParent);
-                  }
-                } else {
-                  setParent(existingParent);
-                }
-
-                router.replace('/(auth)/add-child');
-                return;
-              }
-
-              // For other types (recovery, etc.), check if user has children
-              const { data: parentData } = await supabase
-                .from('parents')
-                .select('*')
-                .eq('user_id', session.user.id)
-                .single();
-
-              if (parentData) {
-                setParent(parentData);
-
-                const { data: childrenData } = await supabase
-                  .from('children')
-                  .select('id')
-                  .eq('parent_id', parentData.id)
-                  .limit(1);
-
-                if (childrenData && childrenData.length > 0) {
-                  router.replace('/(app)/(tabs)/learn');
-                } else {
-                  router.replace('/(auth)/add-child');
-                }
-                return;
-              }
-
-              // No parent record, go to add-child
-              router.replace('/(auth)/add-child');
-              return;
-            }
-          }
-        } catch (err) {
-          console.error('Error processing auth tokens:', err);
-          // Clear hash and continue to normal flow
-          window.history.replaceState(null, '', window.location.pathname);
-        }
-      }
-
-      // Check for error in hash (expired link, etc)
+      // Check for error in hash first (expired link, etc)
       if (hash && hash.includes('error=')) {
         const params = new URLSearchParams(hash.substring(1));
         const errorDesc = params.get('error_description');
@@ -118,6 +27,124 @@ export default function Index() {
           alert(decodeURIComponent(errorDesc.replace(/\+/g, ' ')));
         }
         window.history.replaceState(null, '', window.location.pathname);
+        setIsProcessingAuth(false);
+        return;
+      }
+
+      // Check if there's a hash with tokens
+      if (hash && hash.includes('access_token')) {
+        // Clear the hash from URL immediately
+        window.history.replaceState(null, '', window.location.pathname);
+
+        try {
+          const params = new URLSearchParams(hash.substring(1));
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+          const type = params.get('type');
+
+          console.log('Processing auth tokens, type:', type);
+
+          if (accessToken && refreshToken) {
+            const { data: { session }, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+
+            if (error) {
+              console.error('Error setting session:', error);
+              // Still try to redirect to add-child on error
+              setRedirectTo('/(auth)/add-child');
+              setIsProcessingAuth(false);
+              return;
+            }
+
+            console.log('Session set successfully:', !!session?.user);
+
+            if (session?.user) {
+              // For new signups, create parent and go to add-child
+              if (type === 'signup') {
+                // Check if parent already exists (use maybeSingle to avoid error)
+                try {
+                  const { data: existingParent } = await supabase
+                    .from('parents')
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .maybeSingle();
+
+                  console.log('Existing parent:', !!existingParent);
+
+                  if (!existingParent) {
+                    const { data: newParent, error: insertError } = await supabase
+                      .from('parents')
+                      .insert({
+                        user_id: session.user.id,
+                        email: session.user.email,
+                      })
+                      .select()
+                      .single();
+
+                    if (insertError) {
+                      console.error('Error creating parent:', insertError);
+                    } else if (newParent) {
+                      console.log('Created new parent');
+                      setParent(newParent);
+                    }
+                  } else {
+                    setParent(existingParent);
+                  }
+                } catch (dbErr) {
+                  console.error('Database error during signup:', dbErr);
+                }
+
+                // Always redirect to add-child for signup, regardless of db errors
+                console.log('Redirecting to add-child');
+                setRedirectTo('/(auth)/add-child');
+                setIsProcessingAuth(false);
+                return;
+              }
+
+              // For other types (recovery, login, etc.), check if user has children
+              try {
+                const { data: parentData } = await supabase
+                  .from('parents')
+                  .select('*')
+                  .eq('user_id', session.user.id)
+                  .maybeSingle();
+
+                if (parentData) {
+                  setParent(parentData);
+
+                  const { data: childrenData } = await supabase
+                    .from('children')
+                    .select('id')
+                    .eq('parent_id', parentData.id)
+                    .limit(1);
+
+                  if (childrenData && childrenData.length > 0) {
+                    setRedirectTo('/(tabs)/learn');
+                  } else {
+                    setRedirectTo('/(auth)/add-child');
+                  }
+                } else {
+                  setRedirectTo('/(auth)/add-child');
+                }
+              } catch (dbErr) {
+                console.error('Database error:', dbErr);
+                setRedirectTo('/(auth)/add-child');
+              }
+
+              setIsProcessingAuth(false);
+              return;
+            }
+          }
+
+          // Tokens present but no session - redirect to add-child anyway
+          setRedirectTo('/(auth)/add-child');
+        } catch (err) {
+          console.error('Error processing auth tokens:', err);
+          // On any error, redirect to add-child to avoid stuck loading
+          setRedirectTo('/(auth)/add-child');
+        }
       }
 
       setIsProcessingAuth(false);
@@ -126,7 +153,13 @@ export default function Index() {
     handleHashTokens();
   }, []);
 
-  // Show loading state
+  // Handle redirect after auth processing - use Redirect component
+  // This takes priority over loading state
+  if (redirectTo) {
+    return <Redirect href={redirectTo as any} />;
+  }
+
+  // Show loading state while processing auth or initializing
   if (isLoading || isProcessingAuth) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
@@ -147,5 +180,5 @@ export default function Index() {
   }
 
   // Authenticated with children - go to main app
-  return <Redirect href="/(app)/(tabs)/learn" />;
+  return <Redirect href="/(tabs)/learn" />;
 }
