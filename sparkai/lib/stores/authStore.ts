@@ -55,10 +55,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { data: { session } } = await supabase.auth.getSession();
 
       if (session?.user) {
+        // Set authenticated immediately
+        set({ isAuthenticated: true });
         await get().fetchUserData(session.user.id);
+      } else {
+        set({ isAuthenticated: false });
       }
     } catch (error) {
       console.error('Failed to initialize auth:', error);
+      set({ isAuthenticated: false });
     } finally {
       set({ isLoading: false });
     }
@@ -67,15 +72,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   // Fetch user profile and parent data
   fetchUserData: async (userId: string) => {
     try {
-      // Fetch profile
+      // Set authenticated immediately since we have a valid user ID
+      set({ isAuthenticated: true });
+
+      // Fetch profile (optional - may not exist)
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (profile) {
-        set({ user: profile, isAuthenticated: true });
+        set({ user: profile });
       }
 
       // Fetch parent record
@@ -83,12 +91,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         .from('parents')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (parent) {
         set({ parent });
         // Fetch children
         await get().fetchChildren(parent.id);
+      } else {
+        // Create parent record if it doesn't exist
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email) {
+          const { data: newParent } = await supabase
+            .from('parents')
+            .insert({
+              user_id: userId,
+              email: user.email,
+            })
+            .select()
+            .single();
+
+          if (newParent) {
+            set({ parent: newParent });
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to fetch user data:', error);
@@ -187,9 +212,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 supabase.auth.onAuthStateChange(async (event, session) => {
   const store = useAuthStore.getState();
 
-  if (event === 'SIGNED_IN' && session?.user) {
+  console.log('Auth state change:', event, !!session?.user);
+
+  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
+    // Set authenticated immediately, then fetch additional data
+    useAuthStore.setState({ isAuthenticated: true });
     await store.fetchUserData(session.user.id);
   } else if (event === 'SIGNED_OUT') {
+    useAuthStore.setState({ isAuthenticated: false });
     store.setUser(null);
     store.setParent(null);
     store.setChildren([]);

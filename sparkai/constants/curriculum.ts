@@ -3,91 +3,71 @@ import { Module } from '@/types';
 export const CURRICULUM: Module[] = [
   {
     id: 'module-1',
-    title: 'AI All Around Us',
-    description: 'Discover where AI lives in your everyday world',
-    color: '#3B82F6',
-    icon: '🌍',
+    title: 'Your First AI Creation',
+    description: 'Make something amazing in 5 minutes',
+    color: '#8B5CF6',
+    icon: '🚀',
     lessons: [
       {
         id: 'lesson-1-1',
-        title: 'What is AI?',
-        description: 'Learn what artificial intelligence really means',
-        duration_minutes: 10,
-        icon: '🤔',
-        type: 'interactive',
+        title: 'AI Art in 60 Seconds',
+        description: 'Create your first AI artwork right now',
+        duration_minutes: 5,
+        icon: '🎨',
+        type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Welcome to AI!',
-              body: "AI stands for Artificial Intelligence. It's like teaching a computer to think and learn, kind of like how you learn new things at school!",
+              title: "Let's Make Art!",
+              body: "Type what you want to see, and AI will create it. Try: 'A dragon eating pizza in space' - be as wild as you want!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'SortingGame',
+              component: 'AIArtCreator',
               props: {
-                title: 'AI or Not AI?',
-                instructions: 'Drag each item to the correct category',
-                categories: ['Uses AI', 'Does Not Use AI'],
-                items: [
-                  { text: 'Netflix recommending shows', category: 0 },
-                  { text: 'A regular light switch', category: 1 },
-                  { text: 'Siri answering questions', category: 0 },
-                  { text: 'A paper book', category: 1 },
-                  { text: 'Video game characters', category: 0 },
-                  { text: 'A bicycle', category: 1 },
+                title: 'Create Your Art',
+                starterPrompts: [
+                  'A dragon eating pizza in space',
+                  'A cat wearing a superhero cape',
+                  'An underwater city with fish cars',
+                  'A robot playing basketball on the moon',
                 ],
+                canSave: true,
+                canShare: true,
               },
-            },
-          },
-          {
-            type: 'quiz',
-            data: {
-              questions: [
-                {
-                  id: 'q1',
-                  question: 'What does AI stand for?',
-                  options: ['Automatic Internet', 'Artificial Intelligence', 'Amazing Invention', 'Apple iPhone'],
-                  correctIndex: 1,
-                  explanation: 'AI stands for Artificial Intelligence - computers that can learn and make decisions!',
-                },
-                {
-                  id: 'q2',
-                  question: 'Which of these uses AI?',
-                  options: ['A pencil', 'A voice assistant like Alexa', 'A regular clock', 'A paper map'],
-                  correctIndex: 1,
-                  explanation: 'Voice assistants use AI to understand what you say and respond!',
-                },
-              ],
             },
           },
         ],
       },
       {
         id: 'lesson-1-2',
-        title: 'AI vs Humans',
-        description: 'Compare what AI and humans do best',
-        duration_minutes: 12,
-        icon: '⚖️',
-        type: 'interactive',
+        title: 'Your AI Story Starter',
+        description: 'Begin an adventure story with AI',
+        duration_minutes: 8,
+        icon: '📖',
+        type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'AI and Humans are Different',
-              body: "AI is really good at some things, and humans are really good at other things. Let's explore what each does best!",
+              title: 'Start Your Story',
+              body: "Pick a character and a problem, and AI will help you write an exciting adventure. You're the author - AI is your helper!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'ComparisonBuilder',
+              component: 'StoryBuilder',
               props: {
-                title: 'Build a Comparison Chart',
-                aiStrengths: ['Doing math really fast', 'Never getting tired', 'Remembering lots of data'],
-                humanStrengths: ['Being creative', 'Understanding feelings', 'Making new friends'],
+                title: 'Adventure Story Creator',
+                characterOptions: ['A brave kid', 'A talking dog', 'A tiny robot', 'A friendly alien'],
+                settingOptions: ['A magical forest', 'A future city', 'An underwater kingdom', 'A candy world'],
+                problemOptions: ['Something is missing', 'A new friend needs help', 'A mystery to solve', 'A race to win'],
+                canContinue: true,
+                canSave: true,
               },
             },
           },
@@ -95,30 +75,45 @@ export const CURRICULUM: Module[] = [
       },
       {
         id: 'lesson-1-3',
-        title: 'AI Detectives',
-        description: 'Find AI in your own home!',
-        duration_minutes: 15,
-        icon: '🔍',
-        type: 'project',
+        title: 'The Magic Words',
+        description: 'Learn prompts that get amazing results',
+        duration_minutes: 10,
+        icon: '✨',
+        type: 'interactive',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Become an AI Detective!',
-              body: "Your mission: find 5 things in your home that use AI. Take photos and explain what the AI does. Let's go exploring!",
+              title: 'Secret Prompt Powers',
+              body: "The way you ask AI changes what you get. Let's learn some magic words that make AI work way better!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'ScavengerHunt',
+              component: 'PromptPowerUps',
               props: {
-                title: 'AI Scavenger Hunt',
-                targetCount: 5,
-                hints: [
-                  'Check devices that respond to your voice',
-                  'Look at apps that recommend things to you',
-                  'Find gadgets that recognize faces',
+                title: 'Prompt Power-Ups',
+                powerUps: [
+                  { name: 'Be Specific', example: 'Draw a dog → Draw a fluffy golden retriever puppy playing in autumn leaves' },
+                  { name: 'Add Style', example: 'Draw a castle → Draw a castle in the style of a cartoon, with bright colors' },
+                  { name: 'Set the Mood', example: 'Write a story → Write a funny story that will make me laugh' },
+                  { name: 'Give Examples', example: 'Make a joke → Make a joke like: Why did the chicken cross the road?' },
+                ],
+                practiceMode: true,
+              },
+            },
+          },
+          {
+            type: 'interactive',
+            data: {
+              component: 'PromptChallenge',
+              props: {
+                title: 'Prompt Battle',
+                challenges: [
+                  { goal: 'Get AI to describe a rainbow in exactly 10 words', hints: ['Tell AI the exact number you want'] },
+                  { goal: 'Get AI to write a haiku about pizza', hints: ['Tell AI the format you want'] },
+                  { goal: 'Get AI to explain gravity like you\'re 5', hints: ['Tell AI who the audience is'] },
                 ],
               },
             },
@@ -129,34 +124,37 @@ export const CURRICULUM: Module[] = [
   },
   {
     id: 'module-2',
-    title: 'How AI Learns',
-    description: 'Understand how computers learn from examples',
-    color: '#8B5CF6',
-    icon: '🧠',
+    title: 'AI Story Studio',
+    description: 'Create stories, comics, and books',
+    color: '#EC4899',
+    icon: '📚',
     lessons: [
       {
         id: 'lesson-2-1',
-        title: 'Learning from Examples',
-        description: 'See how AI learns patterns like you do',
-        duration_minutes: 12,
-        icon: '📚',
-        type: 'interactive',
+        title: 'Comic Creator',
+        description: 'Make your own comic strip with AI',
+        duration_minutes: 15,
+        icon: '💥',
+        type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'AI Learns Like You!',
-              body: "When you learned to recognize a cat, you saw lots of cats first. AI learns the same way - by looking at many examples!",
+              title: 'Create a Comic!',
+              body: "You'll create a 4-panel comic strip. Write what happens in each panel, and AI will help you bring it to life!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'DrawingTrainer',
+              component: 'ComicCreator',
               props: {
-                title: 'Teach AI Your Drawings',
-                instructions: 'Draw 5 examples of each shape to train the AI',
-                shapes: ['circle', 'square', 'triangle'],
+                title: 'My Comic Strip',
+                panels: 4,
+                canAddDialogue: true,
+                styleOptions: ['superhero', 'manga', 'cartoon', 'pixel art'],
+                canExport: true,
+                canShare: true,
               },
             },
           },
@@ -164,26 +162,28 @@ export const CURRICULUM: Module[] = [
       },
       {
         id: 'lesson-2-2',
-        title: 'Good Data vs Bad Data',
-        description: 'Learn why the examples matter',
-        duration_minutes: 10,
-        icon: '📊',
-        type: 'interactive',
+        title: 'Choose Your Adventure',
+        description: 'Write a story where readers make choices',
+        duration_minutes: 20,
+        icon: '🔀',
+        type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Garbage In, Garbage Out!',
-              body: "If you teach AI with wrong examples, it learns wrong things. That's why good data is super important!",
+              title: 'Branching Stories',
+              body: "Create a story where the reader decides what happens! At key moments, you'll write two different paths they can choose.",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'DataFixer',
+              component: 'BranchingStory',
               props: {
-                title: 'Fix the Training Data',
-                scenario: 'The AI thinks all fruits are apples! Can you fix the training data?',
+                title: 'Choose Your Adventure',
+                minBranches: 3,
+                canPlaythrough: true,
+                canShareLink: true,
               },
             },
           },
@@ -191,27 +191,31 @@ export const CURRICULUM: Module[] = [
       },
       {
         id: 'lesson-2-3',
-        title: 'Train Your Own AI',
-        description: 'Build a simple image classifier',
-        duration_minutes: 20,
-        icon: '🎓',
+        title: 'My Mini Book',
+        description: 'Create an illustrated storybook',
+        duration_minutes: 25,
+        icon: '📕',
         type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Build Your Own AI!',
-              body: "Now it's your turn! You'll train an AI to recognize three different hand gestures. The more examples you give it, the better it gets!",
+              title: 'Author & Illustrator',
+              body: "Write a short story (5-8 pages) and create illustrations for each page. At the end, you'll have a real book to share!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'ImageClassifier',
+              component: 'BookCreator',
               props: {
-                title: 'Gesture Recognizer',
-                categories: ['Thumbs Up', 'Peace Sign', 'Wave'],
-                minExamplesPerCategory: 5,
+                title: 'My Storybook',
+                minPages: 5,
+                maxPages: 8,
+                includesCover: true,
+                includesAuthorPage: true,
+                canDownloadPDF: true,
+                canPrint: true,
               },
             },
           },
@@ -221,38 +225,36 @@ export const CURRICULUM: Module[] = [
   },
   {
     id: 'module-3',
-    title: 'Talking to AI',
-    description: 'Master the art of prompting',
-    color: '#EC4899',
-    icon: '💬',
+    title: 'AI Design Lab',
+    description: 'Design characters, posters, and inventions',
+    color: '#3B82F6',
+    icon: '🎨',
     lessons: [
       {
         id: 'lesson-3-1',
-        title: 'Giving Clear Instructions',
-        description: 'Learn why specific prompts work better',
-        duration_minutes: 10,
-        icon: '📝',
-        type: 'interactive',
+        title: 'Character Designer',
+        description: 'Create your own original character',
+        duration_minutes: 15,
+        icon: '🦸',
+        type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Be Specific!',
-              body: "When you talk to AI, being specific helps a lot. \"Draw a dog\" is okay, but \"Draw a happy golden retriever playing in a park\" is much better!",
+              title: 'Design a Character',
+              body: "Create an original character with a name, backstory, and look. Use AI to visualize them in different poses and situations!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'PromptLab',
+              component: 'CharacterDesigner',
               props: {
-                title: 'Prompt Comparison',
-                scenarios: [
-                  {
-                    vague: 'Tell me about animals',
-                    specific: 'Tell me 3 fun facts about dolphins for a kid',
-                  },
-                ],
+                title: 'Character Creator',
+                attributes: ['appearance', 'personality', 'superpower', 'weakness', 'catchphrase'],
+                poseOptions: ['hero pose', 'action scene', 'relaxing', 'with friends'],
+                canCreateVariations: true,
+                canSaveToGallery: true,
               },
             },
           },
@@ -260,29 +262,30 @@ export const CURRICULUM: Module[] = [
       },
       {
         id: 'lesson-3-2',
-        title: 'The Prompt Game',
-        description: 'Challenge yourself to write better prompts',
+        title: 'Poster Maker',
+        description: 'Design posters for real events',
         duration_minutes: 15,
-        icon: '🎮',
-        type: 'interactive',
+        icon: '🪧',
+        type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: "Let's Play!",
-              body: "In this game, you'll try to get the AI to create exactly what you want. The fewer tries it takes, the more points you get!",
+              title: 'Make a Poster',
+              body: "Design a poster for something real - a birthday party, school event, or your bedroom wall. Make it look professional!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'PromptGame',
+              component: 'PosterDesigner',
               props: {
-                title: 'Prompt Challenge',
-                challenges: [
-                  { target: 'A blue cat wearing a hat', maxTries: 5 },
-                  { target: 'A robot reading a book', maxTries: 5 },
-                ],
+                title: 'Poster Studio',
+                templates: ['party', 'event', 'motivational', 'movie poster', 'wanted poster'],
+                canAddText: true,
+                canChooseFonts: true,
+                canDownload: true,
+                canPrint: true,
               },
             },
           },
@@ -290,27 +293,28 @@ export const CURRICULUM: Module[] = [
       },
       {
         id: 'lesson-3-3',
-        title: 'AI Art Studio',
-        description: 'Create your own AI art gallery',
+        title: 'Invention Workshop',
+        description: 'Design a crazy invention with AI',
         duration_minutes: 20,
-        icon: '🎨',
+        icon: '💡',
         type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Your Art Gallery',
-              body: "Time to be an artist! You'll create 3 pieces of AI art using prompts. Think about style, colors, and details!",
+              title: 'Invent Something New',
+              body: "What problem would you solve? Design an invention - real or silly - and use AI to visualize it and write the instructions!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'ArtStudio',
+              component: 'InventionWorkshop',
               props: {
-                title: 'Create Your Gallery',
-                artPiecesRequired: 3,
-                styleOptions: ['cartoon', 'realistic', 'watercolor', 'pixel art'],
+                title: 'Invention Lab',
+                steps: ['identify problem', 'brainstorm solutions', 'design invention', 'name it', 'create ad'],
+                canCreateBlueprint: true,
+                canCreateCommercial: true,
               },
             },
           },
@@ -320,36 +324,37 @@ export const CURRICULUM: Module[] = [
   },
   {
     id: 'module-4',
-    title: 'AI Makes Mistakes',
-    description: 'Think critically about AI outputs',
-    color: '#F59E0B',
-    icon: '🔍',
+    title: 'Code with AI',
+    description: 'Build games, websites, and animations',
+    color: '#10B981',
+    icon: '💻',
     lessons: [
       {
         id: 'lesson-4-1',
-        title: 'Oops! AI Got it Wrong',
-        description: 'See funny and serious AI mistakes',
-        duration_minutes: 10,
-        icon: '😅',
-        type: 'interactive',
+        title: 'My First Website',
+        description: 'Build a real website with AI help',
+        duration_minutes: 20,
+        icon: '🌐',
+        type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: "AI Isn't Perfect!",
-              body: "AI can make mistakes, some funny and some serious. It might say things that aren't true or get confused. That's why we always need to check!",
+              title: 'Build a Website!',
+              body: "Tell AI what website you want, and it will write the code. You can see it live and share the link with anyone!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'MistakeSpotter',
+              component: 'WebsiteBuilder',
               props: {
-                title: 'Spot the Mistake',
-                examples: [
-                  { aiOutput: 'Penguins can fly really fast', hasError: true },
-                  { aiOutput: 'The Earth orbits the Sun', hasError: false },
-                ],
+                title: 'Website Creator',
+                templates: ['about me', 'fan page', 'pet profile', 'recipe site', 'portfolio'],
+                showsCode: true,
+                canEditCode: true,
+                canPublish: true,
+                canShareLink: true,
               },
             },
           },
@@ -357,27 +362,29 @@ export const CURRICULUM: Module[] = [
       },
       {
         id: 'lesson-4-2',
-        title: 'Is This Real?',
-        description: 'Learn to spot AI-generated content',
-        duration_minutes: 12,
-        icon: '🤔',
-        type: 'interactive',
+        title: 'Animation Studio',
+        description: 'Create moving pictures with code',
+        duration_minutes: 20,
+        icon: '🎬',
+        type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Real or AI?',
-              body: "AI can create images and text that look real but aren't. Let's learn some tricks to tell the difference!",
+              title: 'Animate It!',
+              body: "Make things move! Create animations by telling AI what should happen - bouncing balls, flying spaceships, dancing characters!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'RealOrFake',
+              component: 'AnimationStudio',
               props: {
-                title: 'Fake or Real?',
-                rounds: 10,
-                categories: ['images', 'text'],
+                title: 'Animation Creator',
+                starterProjects: ['bouncing ball', 'solar system', 'fish tank', 'fireworks'],
+                canPreview: true,
+                canExportGif: true,
+                showsCode: true,
               },
             },
           },
@@ -385,26 +392,62 @@ export const CURRICULUM: Module[] = [
       },
       {
         id: 'lesson-4-3',
-        title: 'AI Fairness Detective',
-        description: 'Explore AI bias and fairness',
-        duration_minutes: 15,
-        icon: '⚖️',
+        title: 'Game Maker',
+        description: 'Build a simple game you can play',
+        duration_minutes: 30,
+        icon: '🎮',
         type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Is AI Fair?',
-              body: "Sometimes AI can be unfair without meaning to be. Let's explore why this happens and what we can do about it.",
+              title: 'Make a Game!',
+              body: "Create a real game that you and your friends can play! Start with a simple idea and build it up with AI's help.",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'FairnessStory',
+              component: 'GameBuilder',
               props: {
-                title: 'Fairness Detective',
-                scenarios: ['hiring', 'games', 'recommendations'],
+                title: 'Game Creator',
+                gameTypes: ['catch the falling items', 'maze runner', 'quiz game', 'clicker game', 'simple platformer'],
+                canCustomize: true,
+                canPlaytest: true,
+                canShare: true,
+                showsCode: true,
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: 'lesson-4-4',
+        title: 'Debug Detective',
+        description: 'Learn to fix code with AI',
+        duration_minutes: 15,
+        icon: '🔧',
+        type: 'interactive',
+        content: [
+          {
+            type: 'text',
+            data: {
+              title: 'Find the Bug!',
+              body: "Sometimes code breaks. Learn how to describe problems to AI and get them fixed. It's like being a code detective!",
+            },
+          },
+          {
+            type: 'interactive',
+            data: {
+              component: 'DebugChallenge',
+              props: {
+                title: 'Bug Hunt',
+                challenges: [
+                  { broken: 'Button does nothing when clicked', skill: 'describing the problem' },
+                  { broken: 'Colors are all wrong', skill: 'being specific about what\'s wrong' },
+                  { broken: 'Game is too fast/slow', skill: 'explaining desired behavior' },
+                ],
+                showsFixProcess: true,
               },
             },
           },
@@ -414,38 +457,35 @@ export const CURRICULUM: Module[] = [
   },
   {
     id: 'module-5',
-    title: 'Using AI Responsibly',
-    description: 'Become a responsible AI citizen',
-    color: '#10B981',
-    icon: '🛡️',
+    title: 'AI Helper Projects',
+    description: 'Build useful things for real life',
+    color: '#F59E0B',
+    icon: '🛠️',
     lessons: [
       {
         id: 'lesson-5-1',
-        title: 'When to Use AI',
-        description: 'Learn the right times to use AI help',
-        duration_minutes: 10,
-        icon: '🎯',
+        title: 'Homework Helper',
+        description: 'Use AI the right way for school',
+        duration_minutes: 15,
+        icon: '📝',
         type: 'interactive',
         content: [
           {
             type: 'text',
             data: {
-              title: 'AI is a Tool',
-              body: "AI is like a super helpful tool, but just like any tool, there are good times and not-so-good times to use it. Let's learn when!",
+              title: 'AI for Learning',
+              body: "AI shouldn't do your homework, but it's amazing for explaining hard things, checking your work, and helping you learn faster!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'ScenarioSorter',
+              component: 'HomeworkHelper',
               props: {
-                title: 'Good Use or Not?',
-                scenarios: [
-                  { text: 'Using AI to brainstorm ideas', isGoodUse: true },
-                  { text: 'Having AI write your whole homework', isGoodUse: false },
-                  { text: 'Using AI to help explain a hard topic', isGoodUse: true },
-                  { text: 'Copying AI answers without thinking', isGoodUse: false },
-                ],
+                title: 'Study Buddy',
+                modes: ['explain this concept', 'check my answer', 'quiz me', 'make flashcards'],
+                subjects: ['math', 'science', 'history', 'english', 'other'],
+                emphasizesLearning: true,
               },
             },
           },
@@ -453,33 +493,30 @@ export const CURRICULUM: Module[] = [
       },
       {
         id: 'lesson-5-2',
-        title: 'AI and Your Privacy',
-        description: 'Keep your information safe',
-        duration_minutes: 10,
-        icon: '🔒',
-        type: 'interactive',
+        title: 'Family Recipe Book',
+        description: 'Create a cookbook with family recipes',
+        duration_minutes: 20,
+        icon: '🍳',
+        type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Protect Your Info!',
-              body: "Some things are okay to share with AI, but some things should stay private. Let's learn the difference!",
+              title: 'Family Cookbook',
+              body: "Interview family members about favorite recipes, then use AI to format them beautifully with illustrations. A great gift!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'PrivacyGame',
+              component: 'CookbookCreator',
               props: {
-                title: 'Safe to Share?',
-                items: [
-                  { text: 'Your favorite color', isSafe: true },
-                  { text: 'Your home address', isSafe: false },
-                  { text: 'Your favorite book', isSafe: true },
-                  { text: 'Your password', isSafe: false },
-                  { text: 'A question about homework', isSafe: true },
-                  { text: "Your parent's credit card", isSafe: false },
-                ],
+                title: 'Family Recipe Book',
+                includesInterviewPrompts: true,
+                canAddPhotos: true,
+                canAddStories: true,
+                canCreateCover: true,
+                canDownloadPDF: true,
               },
             },
           },
@@ -487,26 +524,203 @@ export const CURRICULUM: Module[] = [
       },
       {
         id: 'lesson-5-3',
-        title: 'My AI Promise',
-        description: 'Create your personal AI pledge',
-        duration_minutes: 15,
-        icon: '📜',
+        title: 'Presentation Pro',
+        description: 'Make amazing slideshows with AI',
+        duration_minutes: 20,
+        icon: '📊',
         type: 'project',
         content: [
           {
             type: 'text',
             data: {
-              title: 'Make a Promise!',
-              body: "You've learned so much about AI! Now it's time to make a promise about how you'll use AI responsibly. This is YOUR commitment!",
+              title: 'Slides That Wow',
+              body: "Got a school presentation? Learn to use AI to research, organize, and design slides that will impress your class!",
             },
           },
           {
             type: 'interactive',
             data: {
-              component: 'PledgeBuilder',
+              component: 'PresentationBuilder',
               props: {
-                title: 'My AI Promise',
-                categories: ['learning', 'privacy', 'honesty', 'kindness'],
+                title: 'Presentation Maker',
+                steps: ['pick topic', 'research with AI', 'outline', 'create slides', 'add visuals', 'practice'],
+                canExport: true,
+                includesSpeakerNotes: true,
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: 'lesson-5-4',
+        title: 'Birthday Party Planner',
+        description: 'Plan an amazing party with AI',
+        duration_minutes: 15,
+        icon: '🎂',
+        type: 'project',
+        content: [
+          {
+            type: 'text',
+            data: {
+              title: 'Party Planning',
+              body: "Use AI to plan a themed party - invitations, decorations, games, and even a playlist. Impress your parents with your planning skills!",
+            },
+          },
+          {
+            type: 'interactive',
+            data: {
+              component: 'PartyPlanner',
+              props: {
+                title: 'Party Planner',
+                elements: ['theme', 'invitations', 'decorations', 'games', 'food', 'playlist'],
+                canCreateInvites: true,
+                canCreateChecklist: true,
+                canShare: true,
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'module-6',
+    title: 'AI Superpowers',
+    description: 'Advanced techniques for amazing results',
+    color: '#6366F1',
+    icon: '⚡',
+    lessons: [
+      {
+        id: 'lesson-6-1',
+        title: 'Chain Prompting',
+        description: 'Build complex things step by step',
+        duration_minutes: 15,
+        icon: '🔗',
+        type: 'interactive',
+        content: [
+          {
+            type: 'text',
+            data: {
+              title: 'Prompt Chains',
+              body: "For big projects, break them into steps. Ask AI for one piece, then use that answer to ask for the next. It's like building with LEGO!",
+            },
+          },
+          {
+            type: 'interactive',
+            data: {
+              component: 'ChainBuilder',
+              props: {
+                title: 'Chain Prompting Lab',
+                examples: [
+                  { goal: 'Write a song', steps: ['topic', 'style', 'lyrics', 'title', 'album art'] },
+                  { goal: 'Design a product', steps: ['problem', 'solution', 'features', 'name', 'packaging'] },
+                ],
+                canCreateOwn: true,
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: 'lesson-6-2',
+        title: 'AI Personas',
+        description: 'Make AI act like different experts',
+        duration_minutes: 15,
+        icon: '🎭',
+        type: 'interactive',
+        content: [
+          {
+            type: 'text',
+            data: {
+              title: 'Expert Mode',
+              body: "You can ask AI to be a specific expert - a scientist, chef, game designer, or storyteller. Different experts give different answers!",
+            },
+          },
+          {
+            type: 'interactive',
+            data: {
+              component: 'PersonaSwitcher',
+              props: {
+                title: 'Expert Advisor',
+                personas: [
+                  { name: 'Chef', prompt: 'You are a friendly chef who loves teaching kids to cook' },
+                  { name: 'Scientist', prompt: 'You are a scientist who explains things with fun experiments' },
+                  { name: 'Game Designer', prompt: 'You are a game designer who thinks everything can be a game' },
+                  { name: 'Storyteller', prompt: 'You are a storyteller who loves adventures and mysteries' },
+                ],
+                compareSameQuestion: true,
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: 'lesson-6-3',
+        title: 'Iteration Master',
+        description: 'Make AI output better and better',
+        duration_minutes: 15,
+        icon: '🔄',
+        type: 'interactive',
+        content: [
+          {
+            type: 'text',
+            data: {
+              title: 'Make It Better',
+              body: "The first answer isn't always the best. Learn to ask AI to improve, change, or remix what it made until it's perfect!",
+            },
+          },
+          {
+            type: 'interactive',
+            data: {
+              component: 'IterationLab',
+              props: {
+                title: 'Improvement Loop',
+                techniques: [
+                  'Make it shorter/longer',
+                  'Make it funnier/more serious',
+                  'Add more detail to [specific part]',
+                  'Change the style to...',
+                  'Keep X but change Y',
+                ],
+                tracksIterations: true,
+                showsImprovement: true,
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: 'lesson-6-4',
+        title: 'Capstone: Your Big Project',
+        description: 'Create something amazing using everything you learned',
+        duration_minutes: 45,
+        icon: '🏆',
+        type: 'project',
+        content: [
+          {
+            type: 'text',
+            data: {
+              title: 'Your Masterpiece',
+              body: "Time to combine everything! Pick a big project - a game, a book, a website, an invention - and bring it to life using all your AI skills.",
+            },
+          },
+          {
+            type: 'interactive',
+            data: {
+              component: 'CapstoneProject',
+              props: {
+                title: 'My Masterpiece',
+                projectTypes: [
+                  { name: 'Full Video Game', skills: ['coding', 'art', 'design'] },
+                  { name: 'Illustrated Novel', skills: ['writing', 'art', 'design'] },
+                  { name: 'Business Plan', skills: ['writing', 'research', 'design'] },
+                  { name: 'Interactive Website', skills: ['coding', 'writing', 'design'] },
+                  { name: 'Your Own Idea', skills: ['all'] },
+                ],
+                includesPlanning: true,
+                includesReflection: true,
+                canShowcase: true,
+                generatesShareableLink: true,
               },
             },
           },
