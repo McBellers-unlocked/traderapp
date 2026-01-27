@@ -12,6 +12,7 @@ import {
 import { Link, router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { signIn, signInWithGoogle, signInWithApple } from '@/lib/supabase';
+import { useAuthStore } from '@/lib/stores';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { SocialAuthButton } from '@/components/ui/SocialAuthButton';
@@ -20,6 +21,7 @@ import Svg, { Path } from 'react-native-svg';
 const SparkyImage = require('@/assets/images/sparky.png');
 
 export default function LoginScreen() {
+  const { fetchUserData } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -42,9 +44,9 @@ export default function LoginScreen() {
       const { data, error } = await signIn(email, password);
       if (error) {
         Alert.alert('Oops!', error.message);
-      } else if (data?.session) {
-        // Small delay to let auth state listener process the session
-        await new Promise(resolve => setTimeout(resolve, 100));
+      } else if (data?.session?.user) {
+        // Directly update auth store - this sets isAuthenticated: true
+        await fetchUserData(data.session.user.id);
         router.replace('/');
       }
     } catch (err) {
