@@ -14,31 +14,38 @@ export default function Index() {
   // Handle auth tokens from URL hash (email verification redirect)
   useEffect(() => {
     const handleHashTokens = async () => {
+      // Not on web - no hash tokens to process
       if (Platform.OS !== 'web') {
         setIsProcessingAuth(false);
         return;
       }
 
-      const hash = window.location.hash;
+      try {
+        const hash = window.location.hash;
 
-      // Check for error in hash first (expired link, etc)
-      if (hash && hash.includes('error=')) {
-        const params = new URLSearchParams(hash.substring(1));
-        const errorDesc = params.get('error_description');
-        if (errorDesc) {
-          alert(decodeURIComponent(errorDesc.replace(/\+/g, ' ')));
+        // No hash - nothing to process
+        if (!hash) {
+          setIsProcessingAuth(false);
+          return;
         }
-        window.history.replaceState(null, '', window.location.pathname);
-        setIsProcessingAuth(false);
-        return;
-      }
 
-      // Check if there's a hash with tokens
-      if (hash && hash.includes('access_token')) {
-        // Clear the hash from URL immediately
-        window.history.replaceState(null, '', window.location.pathname);
+        // Check for error in hash first (expired link, etc)
+        if (hash.includes('error=')) {
+          const params = new URLSearchParams(hash.substring(1));
+          const errorDesc = params.get('error_description');
+          if (errorDesc) {
+            alert(decodeURIComponent(errorDesc.replace(/\+/g, ' ')));
+          }
+          window.history.replaceState(null, '', window.location.pathname);
+          setIsProcessingAuth(false);
+          return;
+        }
 
-        try {
+        // Check if there's a hash with tokens
+        if (hash.includes('access_token')) {
+          // Clear the hash from URL immediately
+          window.history.replaceState(null, '', window.location.pathname);
+
           const params = new URLSearchParams(hash.substring(1));
           const accessToken = params.get('access_token');
           const refreshToken = params.get('refresh_token');
@@ -97,16 +104,17 @@ export default function Index() {
               }
             }
           }
-        } catch (err) {
-          console.error('Error processing auth tokens:', err);
         }
+      } catch (err) {
+        console.error('Error processing auth tokens:', err);
+      } finally {
+        // Always ensure we stop the loading state
+        setIsProcessingAuth(false);
       }
-
-      setIsProcessingAuth(false);
     };
 
     handleHashTokens();
-  }, []);
+  }, [setParent]);
 
   // Show email verified success page
   if (emailVerified) {

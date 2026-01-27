@@ -39,10 +39,12 @@ export default function LoginScreen() {
 
     setIsLoading(true);
     try {
-      const { error } = await signIn(email, password);
+      const { data, error } = await signIn(email, password);
       if (error) {
         Alert.alert('Oops!', error.message);
-      } else {
+      } else if (data?.session) {
+        // Small delay to let auth state listener process the session
+        await new Promise(resolve => setTimeout(resolve, 100));
         router.replace('/');
       }
     } catch (err) {
